@@ -2,11 +2,11 @@
 #
 # Welcome to the OpenMV IDE! Click on the green run arrow button below to run the script!
 
-import sensor, image, time
+import sensor, image, time, math
 import pyb
 from pyb import UART, LED
 
-thresholds = [(46, 84, -9, 32, 46, 127), (58, 80, -24, 127, -128, -33)]
+thresholds = [(54, 100, -24, 0, 31, 127), (58, 80, -24, 127, -128, -33)]
 #thresholds = [(39, 62, -35, -16, 34, 127), (30, 47, -22, 0, -128, -12)]
 # Kinda Works orangethreshold = [(62, 69, 30, 126, 24, 127)]
 # orangethreshold = [(61, 74, 23, 127, -128, 127)]
@@ -69,25 +69,33 @@ def goalcorners(blobs, centre):
     if len(blobs) != 0:
         largestBlob = biggestBlob(blobs)
         corners = largestBlob.rect()
-        corners = [(corners[0], corners[1]), (corners[2], corners[1]), (corners[2], corners[3]), (corners[0], corners[3])]
+        corners = [(corners[0], corners[1]), (corners[2]+corners[0], corners[1]), (corners[2]+corners[0], corners[3]+corners[1]), (corners[0], corners[3]+corners[1])]
+        #print(corners)
+        #print(centre)
         if corners[0][0] < centre[0] and corners[1][0] > centre[0]:
+            #print('In the middle.')
             if corners[0][1] > centre[1]:
-                return corners[0]
+                return [60, corners[0][1]]
+            elif corners[2][1] > centre[1]:
+                return [60, 60]
             else:
-                return corners[2]
+                return [60, corners[2][1]]
         elif corners[0][1] < centre[1] and corners[3][1] > centre[1]:
+            #print('On the left/right.')
             if corners[0][0] > centre[0]:
-                return corners[0]
+                return [corners[0][0], 60]
             else:
-                return corners[1]
+                return [corners[1][0], 60]
         else:
+            #print('On the diagonals.')
             closestdist = 1000
             closestcorner = -1
             for i in corners:
-                if int((i[0]**2 + i[1]**2)**0.5) < closestdist:
-                    closestdist = int((i[0]**2 + i[1]**2)**0.5)
+                if int(math.sqrt(((i[0]-60)**2 + (i[1]-60)**2))) < closestdist:
+                    closestdist = int(math.sqrt(((i[0]-60)**2 + (i[1]-60)**2)))
                     closestcorner = corners.index(i)
-            return corners[closestcorner]
+            return list(corners[closestcorner])
+    return [250, 0]
 
 while(True):
     clock.tick()  # Update the FPS clock.
@@ -112,8 +120,9 @@ while(True):
         data[5], data[6] = sortBlob(orangeBlobs)
         acorner = goalcorners(yellowBlobs, (int(img.width()/2), int(img.height()/2)))
         dcorner = goalcorners(blueBlobs, (int(img.width()/2), int(img.height()/2)))
-        data[7], data[8] = acorner[0], acorner[1]
-        data[9], data[10] = dcorner[0], dcorner[1]
+        data[7], data[8] = int(acorner[0]), int(acorner[1])
+        data[9], data[10] = int(dcorner[0]), int(dcorner[1])
+        print(data[7], data[8])
         #data[7] = 0
         #for i in blueBlobs:
             #if i[4] > data[7]: data[7] = i[4]
