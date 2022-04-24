@@ -7,7 +7,7 @@ class LightSensor2 {
 public:
     LightSensor2() {};
     void init();
-    double DirectionOfLine();
+    double DirectionOfLine(float orientation);
     int prev;
     int read(int no);
 private:
@@ -16,6 +16,8 @@ private:
     int total;
     int direction;
     int location;
+    float origorientation;
+    float offby;
     float fieldlineangle = -1;
     float fieldlinesize;
     bool wrong;

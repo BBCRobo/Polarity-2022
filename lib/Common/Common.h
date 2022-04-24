@@ -9,6 +9,8 @@ double degreesToRandians(double degrees);
 
 #define TO_DEGREES 57.295779513082320876798154814105
 
+#define euler 2.7182818284590452353602874713527
+
 double radiansToDegrees(double radians);
 
 float floatMod(float x, float m);
@@ -67,12 +69,12 @@ struct Vector3D {
 #define ROBOT 2
 
 //Camera
-#define cameraSerial Serial5
+#define cameraSerial Serial7
 #define CAM_BAUD 115200
-#define CAM_PACKET_SIZE 11
+#define CAM_PACKET_SIZE 7
 #define CAM_START_BYTE 254
-#define CAM_CENTRE_X 60
-#define CAM_CENTRE_Y 60
+#define CAM_CENTRE_X 120
+#define CAM_CENTRE_Y 120
 #define CAM_NO_DATA 250
 
 //CAMERA STRENGTH

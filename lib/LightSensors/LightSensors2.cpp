@@ -2,10 +2,21 @@
 #include <Arduino.h>
 #include <Common.h>
 
-//Hello M8
-
 int LightSensor2::read(int no) {
     int multiplexerpins[4] = {LS_BINARY_0, LS_BINARY_1, LS_BINARY_2, LS_BINARY_3};
+    if(no >= 16) {
+        int power = 8;
+        for(int i = 3; i >= 0; i--) {
+            if(no >= power) {
+                digitalWrite(multiplexerpins[i], true);
+                no -= power;
+            } else {
+                digitalWrite(multiplexerpins[i], false);
+            }
+            power = int(power/2);
+        }
+        return analogRead(LS_OUTPUT_2);
+    }
     int power = 8;
     for(int i = 3; i >= 0; i--) {
         if(no >= power) {
@@ -16,7 +27,7 @@ int LightSensor2::read(int no) {
         }
         power = int(power/2);
     }
-    return analogRead(LS_OUTPUT);
+    return analogRead(LS_OUTPUT_1);
 }
 
 void LightSensor2::init() {
@@ -24,7 +35,8 @@ void LightSensor2::init() {
     pinMode(LS_BINARY_1, OUTPUT);
     pinMode(LS_BINARY_2, OUTPUT);
     pinMode(LS_BINARY_3, OUTPUT);
-    pinMode(LS_OUTPUT, INPUT);
+    pinMode(LS_OUTPUT_1, INPUT);
+    pinMode(LS_OUTPUT_2, INPUT);
     for(int i = 0; i < LS_COUNT; i++) {
         green[i] = read(lspins[i]);
     }
@@ -34,16 +46,18 @@ void LightSensor2::init() {
     wrong = false;
 }
 
-double LightSensor2::DirectionOfLine() {
+double LightSensor2::DirectionOfLine(float orientation) {
     int lsvalues[LS_COUNT] = {0};
     int totalno = 0;
     int total = 0;
     for(int i = 0; i < LS_COUNT; i++) {
         // Serial.print(read(lspins[i]));
         // Serial.print(" ");
+        // Serial.print(green[i]);
+        // Serial.print("  ");
         //Serial.print(i);
         // Serial.print(", ");
-        if(read(lspins[i]) > green[i] + 200) {
+        if(read(lspins[i]) > green[i] + 100) {
             lsvalues[i] += 1;
             totalno += 1;
         }
@@ -68,9 +82,32 @@ double LightSensor2::DirectionOfLine() {
     if(direction > 359) {
         direction -= 360;
     }
+    if(location == int(0)) {
+        origorientation = orientation;
+        offby = 0;
+    } else {
+        if(origorientation <= 180) {
+            if(orientation > (180+origorientation)) {
+                offby = abs(origorientation - orientation + 360);
+            } else if(orientation < origorientation) {
+                offby = origorientation - orientation;
+            } else if(orientation <= (origorientation + 180)) {
+                offby = origorientation - orientation;
+            }
+        } else if(origorientation > 180) {
+            if(orientation <(origorientation - 180)) {
+                offby = origorientation - orientation - 360;
+            } else if((orientation <= origorientation) && (orientation >= (origorientation - 180))) {
+                offby = origorientation - orientation;
+            } else if(orientation > origorientation) {
+                offby = origorientation - orientation;
+            }
+        }
+    }
+    direction += offby;
     // Serial.print(prev);
     // Serial.print(" ");
-    // Serial.print(direction);
+    // Serial.println(direction);
     // Serial.print(" ");
     // Serial.println(location);
     // Serial.println(";");
@@ -131,5 +168,5 @@ double LightSensor2::DirectionOfLine() {
         }
     }
     wrong = false;
-    return direction;
+    return (direction - offby);
 };

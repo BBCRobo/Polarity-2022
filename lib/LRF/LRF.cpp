@@ -7,7 +7,7 @@ void Lrf::init() {
     pinMode(LRF_MUX_ENABLE, OUTPUT);
     digitalWrite(LRF_MUX_ENABLE, HIGH);
     LRFMux.begin(MUX_ADDR, LRF_MUX);
-    for(int i = 0; i < 8; i++) {
+    for(int i = 0; i < 4; i++) {
         LRFMux.setPort(i);
         sensor.init();
         delay(20);

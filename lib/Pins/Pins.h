@@ -1,16 +1,15 @@
 #include "Arduino.h"
 
-// Polarity 2021 Motor Switch
-#define MOTOR_SWITCH 57
-#define LS_COUNT 16
-// Polarity 2022 LRF MUX
-#define MUX_ADDR 0
-// Pins for Light Sensors Polarity 2021
-#define LS_BINARY_3 5
-#define LS_BINARY_2 2
-#define LS_BINARY_1 1
-#define LS_BINARY_0 0
-#define LS_OUTPUT A11
+// Polarity 2022
+#define LS_COUNT 32
+// Light Sensor MUXs
+#define LS_BINARY_3 23
+#define LS_BINARY_2 22
+#define LS_BINARY_1 21
+#define LS_BINARY_0 20
+#define LS_OUTPUT_1 A11
+#define LS_OUTPUT_2 A10
+// Light Sensors - Check that the sensors are the right way round on the PCB
 #define LST_PIN_0 0
 #define LST_PIN_1 1
 #define LST_PIN_2 2
@@ -28,29 +27,36 @@
 #define LST_PIN_14 14
 #define LST_PIN_15 15
 
-// Pins for Motors Polarity 2021
+// Pins for Motors
 // Front Right
 #define MOTOR_ANGLE_FR 45
-#define PWM_FR 21
-#define INONE_FR 16
-#define INTWO_FR 17
+#define PWM_FR 10
+#define INONE_FR 5
+#define INTWO_FR 4
 
 // Front Left
 #define MOTOR_ANGLE_FL 315
-#define PWM_FL 20
-#define INONE_FL 15
-#define INTWO_FL 39
+#define PWM_FL 14
+#define INONE_FL 6
+#define INTWO_FL 9
 
 // Back Right
 #define MOTOR_ANGLE_BR 135
-#define PWM_BR 23
-#define INONE_BR 18
-#define INTWO_BR 19
+#define PWM_BR 12
+#define INONE_BR 3
+#define INTWO_BR 2
 
 // Back Left
 #define MOTOR_ANGLE_BL 225
-#define PWM_BL 22
-#define INONE_BL 13
-#define INTWO_BL 14
+#define PWM_BL 11
+#define INONE_BL 8
+#define INTWO_BL 7
 
 // BNO in Wire1
+
+// LRFs
+// LRF in Wire0
+#define LRF_1 30
+#define LRF_2 31
+#define LRF_3 32
+#define LRF_4 33

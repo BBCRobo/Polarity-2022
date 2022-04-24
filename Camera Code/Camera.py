@@ -1,7 +1,7 @@
 # Hello World Example
 #
 # Welcome to the OpenMV IDE! Click on the green run arrow button below to run the script!
-
+# ACTUAL GITHUB
 import sensor, image, time, math
 import pyb
 from pyb import UART, LED
@@ -10,21 +10,21 @@ thresholds = [(54, 100, -24, 0, 31, 127), (58, 80, -24, 127, -128, -33)]
 #thresholds = [(39, 62, -35, -16, 34, 127), (30, 47, -22, 0, -128, -12)]
 # Kinda Works orangethreshold = [(62, 69, 30, 126, 24, 127)]
 # orangethreshold = [(61, 74, 23, 127, -128, 127)]
-orangethreshold = [(0, 100, 6, 127, 19, 127)]
+orangethreshold = [(54, 100, 10, 127, -128, 127)]
 
 attackisyellow = True
 isdebug = True
 
 sensor.reset()                      # Reset and initialize the sensor.
 sensor.set_pixformat(sensor.RGB565) # Set pixel format to RGB565 (or GRAYSCALE)
-sensor.set_framesize(sensor.QQVGA)   # Set frame size to QVGA (320x240)
+sensor.set_framesize(sensor.QVGA)   # Set frame size to QVGA (320x240)
 sensor.skip_frames(time = 2000)
 sensor.set_auto_gain(False)
-sensor.set_auto_whitebal(False, (-5.88632, -6.02073, -3.97489))
+sensor.set_auto_whitebal(False, (-6.02073, -5.62345, -3.65883))
 sensor.set_brightness(1)
 sensor.set_contrast(0)
 sensor.set_saturation(2)
-sensor.set_windowing((20, 0, 120, 120)) # Wait for settings take effect.
+sensor.set_windowing((240, 240)) # Wait for settings take effect.
 clock = time.clock()                # Create a clock object to track the FPS.
 uart = UART(3, 115200, timeout_char = 10)
 
@@ -35,8 +35,21 @@ def biggestBlob(bBlob):
             maxBlob = blob
     return maxBlob
 
-def sortBlob(blobs):
+#def golfballblob(bBlob):
+    #golfballBlob = False
+    #for blob in bBlob:
+        #if blob.area() < 200:
+            #if golfballBlob == False:
+                #golfballBlob = blob
+            #elif blob.area() > golfballBlob.area():
+                #golfballBlob = blob
+    #return golfballBlob
+
+def sortBlob(blobs, colour):
     if len(blobs) != 0:
+        #if colour == 'o' and biggestBlob(blobs).area() > 200:
+            #largestBlob = golfballblob(blobs)
+        #else:
         largestBlob = biggestBlob(blobs)
         if isdebug:
             img.draw_rectangle(largestBlob.rect())
@@ -115,25 +128,25 @@ while(True):
             blueBlobs.append(blob)
     #print(yellowBlobs)
     if attackisyellow:
-        data[1], data[2] = sortBlob(yellowBlobs)
-        data[3], data[4] = sortBlob(blueBlobs)
-        data[5], data[6] = sortBlob(orangeBlobs)
+        #data[1], data[2] = sortBlob(yellowBlobs, 'y')
+        #data[3], data[4] = sortBlob(blueBlobs, 'b')
+        data[5], data[6] = sortBlob(orangeBlobs, 'o')
         acorner = goalcorners(yellowBlobs, (int(img.width()/2), int(img.height()/2)))
         dcorner = goalcorners(blueBlobs, (int(img.width()/2), int(img.height()/2)))
-        data[7], data[8] = int(acorner[0]), int(acorner[1])
-        data[9], data[10] = int(dcorner[0]), int(dcorner[1])
-        print(data[7], data[8])
+        data[1], data[2] = int(acorner[0]), int(acorner[1])
+        data[3], data[4] = int(dcorner[0]), int(dcorner[1])
+        #print(math.sqrt((data[7]-60)**2+(data[8]-60)**2), math.sqrt((data[1]-60)**2+(data[2]-60)**2))
         #data[7] = 0
         #for i in blueBlobs:
             #if i[4] > data[7]: data[7] = i[4]
     else:
-        data[1], data[2] = sortBlob(blueBlobs)
-        data[3], data[4] = sortBlob(yellowBlobs)
+        #data[1], data[2] = sortBlob(blueBlobs)
+        #data[3], data[4] = sortBlob(yellowBlobs)
         data[5], data[6] = sortBlob(orangeBlobs)
         acorner = goalcorners(blueBlobs, (int(img.width()/2), int(img.height()/2)))
         dcorner = goalcorners(yellowBlobs, (int(img.width()/2), int(img.height()/2)))
-        data[7], data[8] = acorner[0], acorner[1]
-        data[9], data[10] = dcorner[0], dcorner[1]
+        data[1], data[2] = acorner[0], acorner[1]
+        data[3], data[4] = dcorner[0], dcorner[1]
         #data[7] = 0
         #for i in yellowBlobs:
             #if i[4] > data[7]: data[7] = i[4]

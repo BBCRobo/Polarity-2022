@@ -1,3 +1,4 @@
+//Actual Github
 #include <MotorController.h>
 #include <Arduino.h>
 #include <Pins.h>
@@ -31,7 +32,6 @@ void setup() {
     ls.init();
     eyes.init();
     //BNO Init
-    pinMode(MOTOR_SWITCH, INPUT);
     while (!compass.begin()) {
         Serial.println("Seems that the BNO is dead....");
     }
@@ -45,22 +45,23 @@ void setup() {
 
 void loop() {
     compass.getEvent(&eventa);
-    double oldangle = move.angle;
+    // double oldangle = move.angle;
     eyes.read();
-    if(move.angle <= 0) {
-        move.angle = oldangle;
-        move.nosee += 1;
-    } else {
-        move.straight = eyes.straight;
-        if(eyes.balive) {
-            move.nosee = 0;
-        }
-    }
-    if(move.nosee > 30) {
-        move.angle = -1;
-    }
+    // if(move.angle <= 0) {
+    //     move.angle = oldangle;
+    //     move.nosee += 1;
+    // } else {
+    //     move.straight = eyes.straight;
+    //     if(eyes.balive) {
+    //         move.nosee = 0;
+    //     }
+    // }
+    // if(move.nosee > 30) {
+    //     move.angle = -1;
+    // }
 
     move.power = 18;
+    Serial.println(eventa.orientation.x);
     if (true){
         move.correction = attack.correction(headingPID.update(eventa.orientation.x > 180 ? eventa.orientation.x - 360 : eventa.orientation.x, 0), eyes.attackangle, eyes.aalive, eyes.balldist);
         move.angle = attack.angle(eyes.aalive, eyes.balive, eyes.dalive, eyes.attackdistance, eyes.defendangle, eyes.balldist, move.straight);
@@ -70,20 +71,17 @@ void loop() {
         move.angle = defend.angle(move.straight, eyes.defenddistance, eyes.balldist, eyes.dalive, eyes.balive);
         move.power = defend.power(eyes.dalive, eyes.balive, move.straight, eyes.defenddistance, eyes.balldist);
     }
-
-    move.line = ls.DirectionOfLine();
+    move.power = 0;
+    move.angle = 0;
+    move.correction = 0;
+    move.line = ls.DirectionOfLine(eventa.orientation.x);
     if(move.line != -11) {
         move.angle = move.line;
         move.power = 30;
     }
-    if(digitalRead(MOTOR_SWITCH) == 0) { move.angle = -5; }
-    if(move.angle != -5) {
-        if(move.angle != -1) {
-            motorArray.moveMotors(move.angle, move.correction, move.power);
-        } else {
-            motorArray.moveMotors(0, move.correction, 0);
-        }
+    if(move.angle != -1) {
+        motorArray.moveMotors(move.angle, move.correction, move.power);
     } else {
-        motorArray.moveMotors(0, 0, 0);
+        motorArray.moveMotors(0, move.correction, 0);
     }
 }
