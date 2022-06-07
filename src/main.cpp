@@ -19,6 +19,7 @@ LightSensor2 ls;
 Camera eyes;
 MoveData move;
 PID headingPID(HEADING_KP, HEADING_KI, HEADING_KD, HEADING_MAX_CORRECTION);
+// PID attackPID(HEADING_AP, HEADING_AI, HEADING_AD, HEADING_MAX_CORRECTION);
 bno::Adafruit_BNO055 compass;
 sensors_event_t eventa;
 Attack attack;
@@ -45,36 +46,29 @@ void setup() {
 
 void loop() {
     compass.getEvent(&eventa);
-    // double oldangle = move.angle;
     eyes.read();
-    // if(move.angle <= 0) {
-    //     move.angle = oldangle;
-    //     move.nosee += 1;
-    // } else {
-    //     move.straight = eyes.straight;
-    //     if(eyes.balive) {
-    //         move.nosee = 0;
-    //     }
-    // }
-    // if(move.nosee > 30) {
-    //     move.angle = -1;
-    // }
+    move.straight = eyes.straight;
 
-    move.power = 18;
-    Serial.println(eventa.orientation.x);
+    move.power = 20;
     if (true){
         move.correction = attack.correction(headingPID.update(eventa.orientation.x > 180 ? eventa.orientation.x - 360 : eventa.orientation.x, 0), eyes.attackangle, eyes.aalive, eyes.balldist);
         move.angle = attack.angle(eyes.aalive, eyes.balive, eyes.dalive, eyes.attackdistance, eyes.defendangle, eyes.balldist, move.straight);
-        if(move.angle == 0 && eyes.balive) {move.power = 24;}
+        if(move.angle == 0 && eyes.balive) {move.power = 30;}
     } else if(false){
-        move.correction = defend.correction(headingPID.update(eventa.orientation.x > 180 ? eventa.orientation.x - 360 : eventa.orientation.x, 0), eyes.dalive);
+        move.correction = defend.correction(headingPID.update(eventa.orientation.x > 180 ? eventa.orientation.x - 360 : eventa.orientation.x, 0), eyes.dalive, eyes.defendangle);
         move.angle = defend.angle(move.straight, eyes.defenddistance, eyes.balldist, eyes.dalive, eyes.balive);
         move.power = defend.power(eyes.dalive, eyes.balive, move.straight, eyes.defenddistance, eyes.balldist);
     }
-    move.power = 0;
-    move.angle = 0;
-    move.correction = 0;
+    // Serial.println(move.correction);
+    // Serial.println(move.correction);
+    // if(eyes.balive) {
+    //     move.correction = 5;
+    // } else {
+    //     move.correction = 0;
+    // }
     move.line = ls.DirectionOfLine(eventa.orientation.x);
+    // move.line = -11;
+    // move.angle = -1;
     if(move.line != -11) {
         move.angle = move.line;
         move.power = 30;

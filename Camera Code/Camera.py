@@ -6,11 +6,11 @@ import sensor, image, time, math
 import pyb
 from pyb import UART, LED
 
-thresholds = [(54, 100, -24, 0, 31, 127), (58, 80, -24, 127, -128, -33)]
+thresholds = [(54, 100, -35, -10, 30, 127), (48, 72, -25, 22, -128, -26)]
 #thresholds = [(39, 62, -35, -16, 34, 127), (30, 47, -22, 0, -128, -12)]
 # Kinda Works orangethreshold = [(62, 69, 30, 126, 24, 127)]
 # orangethreshold = [(61, 74, 23, 127, -128, 127)]
-orangethreshold = [(54, 100, 10, 127, -128, 127)]
+orangethreshold = [(54, 100, 20, 127, -128, 127)]
 
 attackisyellow = True
 isdebug = True
@@ -24,7 +24,7 @@ sensor.set_auto_whitebal(False, (-6.02073, -5.62345, -3.65883))
 sensor.set_brightness(1)
 sensor.set_contrast(0)
 sensor.set_saturation(2)
-sensor.set_windowing((240, 240)) # Wait for settings take effect.
+sensor.set_windowing((50, 0, 240, 240)) # Wait for settings take effect.
 clock = time.clock()                # Create a clock object to track the FPS.
 uart = UART(3, 115200, timeout_char = 10)
 
@@ -81,6 +81,8 @@ def sortBlob(blobs, colour):
 def goalcorners(blobs, centre):
     if len(blobs) != 0:
         largestBlob = biggestBlob(blobs)
+        if isdebug:
+            img.draw_rectangle(largestBlob.rect())
         corners = largestBlob.rect()
         corners = [(corners[0], corners[1]), (corners[2]+corners[0], corners[1]), (corners[2]+corners[0], corners[3]+corners[1]), (corners[0], corners[3]+corners[1])]
         #print(corners)
@@ -88,24 +90,24 @@ def goalcorners(blobs, centre):
         if corners[0][0] < centre[0] and corners[1][0] > centre[0]:
             #print('In the middle.')
             if corners[0][1] > centre[1]:
-                return [60, corners[0][1]]
+                return [120, corners[0][1]]
             elif corners[2][1] > centre[1]:
-                return [60, 60]
+                return [120, 120]
             else:
-                return [60, corners[2][1]]
+                return [120, corners[2][1]]
         elif corners[0][1] < centre[1] and corners[3][1] > centre[1]:
             #print('On the left/right.')
             if corners[0][0] > centre[0]:
-                return [corners[0][0], 60]
+                return [corners[0][0], 120]
             else:
-                return [corners[1][0], 60]
+                return [corners[1][0], 120]
         else:
             #print('On the diagonals.')
             closestdist = 1000
             closestcorner = -1
             for i in corners:
-                if int(math.sqrt(((i[0]-60)**2 + (i[1]-60)**2))) < closestdist:
-                    closestdist = int(math.sqrt(((i[0]-60)**2 + (i[1]-60)**2)))
+                if int(math.sqrt(((i[0]-120)**2 + (i[1]-120)**2))) < closestdist:
+                    closestdist = int(math.sqrt(((i[0]-120)**2 + (i[1]-120)**2)))
                     closestcorner = corners.index(i)
             return list(corners[closestcorner])
     return [250, 0]
@@ -128,25 +130,26 @@ while(True):
             blueBlobs.append(blob)
     #print(yellowBlobs)
     if attackisyellow:
-        #data[1], data[2] = sortBlob(yellowBlobs, 'y')
-        #data[3], data[4] = sortBlob(blueBlobs, 'b')
+        data[1], data[2] = sortBlob(yellowBlobs, 'y')
+        data[3], data[4] = sortBlob(blueBlobs, 'b')
         data[5], data[6] = sortBlob(orangeBlobs, 'o')
         acorner = goalcorners(yellowBlobs, (int(img.width()/2), int(img.height()/2)))
         dcorner = goalcorners(blueBlobs, (int(img.width()/2), int(img.height()/2)))
-        data[1], data[2] = int(acorner[0]), int(acorner[1])
-        data[3], data[4] = int(dcorner[0]), int(dcorner[1])
-        #print(math.sqrt((data[7]-60)**2+(data[8]-60)**2), math.sqrt((data[1]-60)**2+(data[2]-60)**2))
+        data[7], data[8] = int(acorner[0]), int(acorner[1])
+        data[9], data[10] = int(dcorner[0]), int(dcorner[1])
+        print(data[1], data[2])
+        #print(math.sqrt((data[5]-120)**2+(data[6]-120)**2))#, math.sqrt((data[1]-60)**2+(data[2]-60)**2))
         #data[7] = 0
         #for i in blueBlobs:
             #if i[4] > data[7]: data[7] = i[4]
     else:
-        #data[1], data[2] = sortBlob(blueBlobs)
-        #data[3], data[4] = sortBlob(yellowBlobs)
+        data[1], data[2] = sortBlob(blueBlobs)
+        data[3], data[4] = sortBlob(yellowBlobs)
         data[5], data[6] = sortBlob(orangeBlobs)
         acorner = goalcorners(blueBlobs, (int(img.width()/2), int(img.height()/2)))
         dcorner = goalcorners(yellowBlobs, (int(img.width()/2), int(img.height()/2)))
-        data[1], data[2] = acorner[0], acorner[1]
-        data[3], data[4] = dcorner[0], dcorner[1]
+        data[7], data[8] = acorner[0], acorner[1]
+        data[9], data[10] = dcorner[0], dcorner[1]
         #data[7] = 0
         #for i in yellowBlobs:
             #if i[4] > data[7]: data[7] = i[4]
@@ -157,6 +160,7 @@ while(True):
 
     for i in data:
         uart.writechar(i)
+
 
     if isdebug:
         #print(data)

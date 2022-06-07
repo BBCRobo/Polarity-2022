@@ -1,14 +1,12 @@
 #include <Defend.h>
 
-Camera eyeS;
-MoveData movE;
 PID defendPID(HEADING_DP, HEADING_DI, HEADING_DD, HEADING_MAX_CORRECTION);
 PID sidewaysPID(SPEED_SP, SPEED_SI, SPEED_SD, SPEED_MAX_SPEED);
 PID yupPID(SPEED_FP, SPEED_FI, SPEED_FD, SPEED_MAX_SPEED);
 
-double Defend::correction(double hpid, bool dalive) {
+double Defend::correction(double hpid, bool dalive, bool defendangle) {
     if(dalive) {
-        return -defendPID.update(eyeS.defendangle, 180);
+        return -defendPID.update(defendangle, 180);
     } else {
         return hpid;
     }

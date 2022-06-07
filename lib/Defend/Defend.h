@@ -10,7 +10,7 @@
 class Defend {
 public:
     Defend() {};
-    double correction(double hpid, bool dalive);
+    double correction(double hpid, bool dalive, bool defendangle);
     double yup(double defenddistance);
     double xleft(double straight);
     double power(bool dalive, bool balive, double straight, double defenddistance, double balldist);

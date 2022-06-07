@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #include <Common.h>
 #include <VL53L1X.h>
+#include <QWIICMUX.h>
 
 class Lrf {
 public:

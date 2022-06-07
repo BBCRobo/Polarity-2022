@@ -38,17 +38,18 @@ struct Vector3D {
 
 //BNO PID
 //If the robot is not correcting fast enough, increase P.
-#define HEADING_KP 0.2
+#define HEADING_KP 0.5
 // WARNING: DO NOT USE
 #define HEADING_KI 0
 //If the robot does not stop oscillating, increase D.
-#define HEADING_KD 0.03
-#define HEADING_MAX_CORRECTION 20
+#define HEADING_KD 0.06
+#define HEADING_MAX_CORRECTION 100
 
 //Attack PID
-#define HEADING_AP 0.2
+#define HEADING_AP 0.15
 #define HEADING_AI 0
-#define HEADING_AD 0.03
+#define HEADING_AD 0.06
+#define HEADING_A_MAX_CORRECTION 10
 
 //Defend PID
 #define HEADING_DP 0.2
@@ -71,16 +72,16 @@ struct Vector3D {
 //Camera
 #define cameraSerial Serial7
 #define CAM_BAUD 115200
-#define CAM_PACKET_SIZE 7
+#define CAM_PACKET_SIZE 12
 #define CAM_START_BYTE 254
 #define CAM_CENTRE_X 120
 #define CAM_CENTRE_Y 120
 #define CAM_NO_DATA 250
 
 //CAMERA STRENGTH
-#define FAR_BALL 50
+#define FAR_BALL 100
 //CAMERA STRENGTH
-#define CLOSE_BALL 40
+#define CLOSE_BALL 60
 
 struct MoveData{
 	double angle, correction, line, straight;
@@ -93,5 +94,7 @@ struct MoveData{
 #define CENTER_Y 56
 #define CENTER_X 0
 #define LRF_MUX_ENABLE 0
+#define ORBIT_CONSTANT 3
+#define TARGET_DISTANCE 11
 
 #endif
