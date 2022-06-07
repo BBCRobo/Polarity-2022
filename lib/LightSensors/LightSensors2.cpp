@@ -52,8 +52,8 @@ double LightSensor2::DirectionOfLine(float orientation) {
     int totalno = 0;
     int total = 0;
     for(int i = 0; i < LS_COUNT; i++) {
-        // Serial.print(read(lspins[i]));
-        // Serial.print(" ");
+        Serial.print(read(lspins[i]));
+        Serial.print(" ");
         // Serial.print(green[i]);
         // Serial.print("  ");
         //Serial.print(i);
@@ -63,14 +63,14 @@ double LightSensor2::DirectionOfLine(float orientation) {
             totalno += 1;
         }
     }
-    Serial.print(read(0));
-    Serial.print(" ");
-    Serial.print(read(1));
-    Serial.print(" ");
-    Serial.print(read(2));
-    Serial.print(" ");
-    Serial.println(read(3));
-    // Serial.println(";");
+    // Serial.print(read(0));
+    // Serial.print(" ");
+    // Serial.print(read(1));
+    // Serial.print(" ");
+    // Serial.print(read(2));
+    // Serial.print(" ");
+    // Serial.println(read(0));
+    Serial.println(";");
     for(int i = 0; i < LS_COUNT; i++) {
         // Serial.print(lsvalues[i]);
         // Serial.print(" ");
