@@ -8,7 +8,6 @@ public:
     LightSensor2() {};
     void init();
     double DirectionOfLine(float orientation);
-    int prev;
     int read(int no);
 private:
     int green[LS_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};

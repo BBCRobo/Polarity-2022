@@ -59,16 +59,9 @@ void loop() {
         move.angle = defend.angle(move.straight, eyes.defenddistance, eyes.balldist, eyes.dalive, eyes.balive);
         move.power = defend.power(eyes.dalive, eyes.balive, move.straight, eyes.defenddistance, eyes.balldist);
     }
-    // Serial.println(move.correction);
-    // Serial.println(move.correction);
-    // if(eyes.balive) {
-    //     move.correction = 5;
-    // } else {
-    //     move.correction = 0;
-    // }
     move.line = ls.DirectionOfLine(eventa.orientation.x);
     // move.line = -11;
-    // move.angle = -1;
+    move.angle = -1;
     if(move.line != -11) {
         move.angle = move.line;
         move.power = 30;

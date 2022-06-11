@@ -38,55 +38,44 @@ void LightSensor2::init() {
     pinMode(LS_BINARY_3, OUTPUT);
     pinMode(LS_OUTPUT_1, INPUT);
     pinMode(LS_OUTPUT_2, INPUT);
-    // for(int i = 0; i < LS_COUNT; i++) {
-    //     green[i] = read(lspins[i]);
-    // }
-    prev = -11.25;
+    for(int i = 0; i < LS_COUNT; i++) {
+        green[i] = read(lspins[i]);
+    }
     location = 0;
     orig = -11.25;
     wrong = false;
 }
 
 double LightSensor2::DirectionOfLine(float orientation) {
-    int lsvalues[LS_COUNT] = {0};
+    int lsvalues[LS_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     int totalno = 0;
     int total = 0;
     for(int i = 0; i < LS_COUNT; i++) {
-        Serial.print(read(lspins[i]));
-        Serial.print(" ");
-        // Serial.print(green[i]);
-        // Serial.print("  ");
-        //Serial.print(i);
-        // Serial.print(", ");
+        // Serial.print(read(lspins[i]));
+        // Serial.print(" ");
         if(read(lspins[i]) > green[i] + 100) {
-            lsvalues[i] += 1;
+            lsvalues[i] = 1;
             totalno += 1;
+        } else {
+            lsvalues[i] = 0;
         }
     }
-    // Serial.print(read(0));
-    // Serial.print(" ");
-    // Serial.print(read(1));
-    // Serial.print(" ");
-    // Serial.print(read(2));
-    // Serial.print(" ");
-    // Serial.println(read(0));
-    Serial.println(";");
+    // Serial.println(";");
     for(int i = 0; i < LS_COUNT; i++) {
         // Serial.print(lsvalues[i]);
-        // Serial.print(" ");
-        if(i == 1 || i == 4 || i == 6 || i == 9 || i == 12 || i == 13 || i == 14 || i == 18 || i == 21 || i == 25 || i == 28 || i == 30) {
-            if(lsvalues[i] > 0) {
-                if((lsvalues[16] > 0 || lsvalues[17] > 0 || lsvalues[18] > 0 || lsvalues[19] > 0) && (lsvalues[15] > 0 || lsvalues[14] > 0 || lsvalues[13] > 0)) {
-                    total += direc2[i];
-                    if((lsvalues[0] > 0 || lsvalues[1] > 0) && (lsvalues[31] > 0 || lsvalues[30] > 0)) {
-                        wrong = true;
-                    }
-                } else {
-                    total += direc[i];
+        // Serial.print(' ');
+        if(lsvalues[i] > 0) {
+            if((lsvalues[16] > 0 || lsvalues[17] > 0 || lsvalues[18] > 0 || lsvalues[19] > 0) && (lsvalues[15] > 0 || lsvalues[14] > 0 || lsvalues[13] > 0)) {
+                total += direc2[i];
+                if((lsvalues[0] > 0 || lsvalues[1] > 0) && (lsvalues[31] > 0 || lsvalues[30] > 0)) {
+                    wrong = true;
                 }
+            } else {
+                total += direc[i];
             }
         }
     }
+    // Serial.println(';');
     direction = total / (float)totalno;
     if(direction > 359) {
         direction -= 360;
@@ -112,70 +101,49 @@ double LightSensor2::DirectionOfLine(float orientation) {
                 offby = origorientation - orientation;
             }
         }
-    }
-    direction += offby;
-    // Serial.print(prev);
-    // Serial.print(" ");
-    // Serial.println(direction);
-    // Serial.print(" ");
-    // Serial.println(location);
-    // Serial.println(";");
+    }    
+    // Serial.print(direction);
+    // Serial.print(' ');
+    // Serial.print(offby);
+    // Serial.print(' ');
     if(totalno != int(0)) {
         if(location == 0) {
             location = 1;
-            prev = direction;
             orig = direction;
         } else if(location == 3) {
             location = 2;
-            direction = prev;
-        } else if(abs(prev - direction) < 70 || abs(prev + 360 - direction) < 70 || abs(prev - direction - 360) < 70) {
+            direction = orig;
+        } else if(abs(orig - direction + offby) < 90 || abs(orig + offby + 360 - direction) < 90) {
             if(location == 2) {
                 location = 1;
-                direction = prev;
+                direction = orig;
             }
         } else if(location == 2) {
-            direction = prev;
-        } else if(abs(prev - direction) > 70) {
+            direction = orig;
+        } else if(abs(orig - direction + offby) > 90) {
             if(location == 1) {
                 location = 2;
-                direction = prev;
+                direction = orig;
             }
         } if(location == 1) {
             if(wrong == true) {
                 location = 2;
-                prev = orig;
                 direction = orig;
-            } else {
-                if(abs(225-direction) < 35) {
-                    prev = 225;
-                } else if(abs(315 - direction) < 26) {
-                    prev = 315;
-                } else if(abs(45 - direction) < 26) {
-                    prev = 45;
-                } else if(abs(135 - direction) < 26) {
-                    prev = 135;
-                } else if(abs(90 - direction) < 26) {
-                    prev = 90;
-                } else if(abs(180 - direction) < 26) {
-                    prev = 180;
-                } else if(abs(270 - direction) < 26) {
-                    prev = 270;
-                } else if(abs(0 - direction) < 26 || abs(0 - direction - 360) < 26 || abs(360 - direction) < 26) {
-                    prev = 0;
-                }
             }
         }
     } else if(totalno == int(0)) {
         if(location == 1 || location == 0) {
             location = 0;
             direction = -11.25;
-            prev = -11.25;
             orig = -11.25;
         } else if(location == 2 || location == 3) {
             location = 3;
-            direction = prev;
+            direction = orig;
         }
     }
     wrong = false;
-    return (direction - offby);
+    // Serial.print(orig);
+    // Serial.print(' ');
+    // Serial.println(location);
+    return (direction);
 };
