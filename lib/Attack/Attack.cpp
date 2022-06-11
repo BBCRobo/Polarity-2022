@@ -14,6 +14,7 @@ double Attack::correction(double hpid, double attackangle, bool aalive, double b
     //     return hpid;
     // }
     // return hpid;
+    return 0;
 }
 
 double Attack::orbit(double straight, double balldist) {

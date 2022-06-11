@@ -48,7 +48,7 @@ struct Vector3D {
 //Attack PID
 #define HEADING_AP 0.15
 #define HEADING_AI 0
-#define HEADING_AD 0.06
+#define HEADING_AD 0.11
 #define HEADING_A_MAX_CORRECTION 10
 
 //Defend PID

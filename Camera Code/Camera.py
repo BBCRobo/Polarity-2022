@@ -6,7 +6,7 @@ import sensor, image, time, math
 import pyb
 from pyb import UART, LED
 
-thresholds = [(54, 100, -35, -10, 30, 127), (48, 72, -25, 22, -128, -26)]
+thresholds = [(71, 100, -52, 127, 37, 127), (48, 72, -25, 22, -128, -26)]
 #thresholds = [(39, 62, -35, -16, 34, 127), (30, 47, -22, 0, -128, -12)]
 # Kinda Works orangethreshold = [(62, 69, 30, 126, 24, 127)]
 # orangethreshold = [(61, 74, 23, 127, -128, 127)]
