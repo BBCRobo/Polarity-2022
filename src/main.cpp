@@ -51,7 +51,15 @@ void loop() {
 
     move.power = 20;
     if (true){
-        move.correction = attack.correction(headingPID.update(eventa.orientation.x > 180 ? eventa.orientation.x - 360 : eventa.orientation.x, 0), eyes.attackangle, eyes.aalive, eyes.balldist);
+        if(eyes.aalive) {
+            if(eyes.attackangle < 180) {
+                move.correction = headingPID.update(eventa.orientation.x, eventa.orientation.x + eyes.attackangle);
+            } else {
+                move.correction = headingPID.update(eventa.orientation.x, eventa.orientation.x - 360 + eyes.attackangle);
+            }
+        } else {
+            move.correction = headingPID.update(eventa.orientation.x > 180 ? eventa.orientation.x - 360 : eventa.orientation.x, 0);
+        }
         move.angle = attack.angle(eyes.aalive, eyes.balive, eyes.dalive, eyes.attackdistance, eyes.defendangle, eyes.balldist, move.straight);
         if(move.angle == 0 && eyes.balive) {move.power = 30;}
     } else if(false){
@@ -59,8 +67,13 @@ void loop() {
         move.angle = defend.angle(move.straight, eyes.defenddistance, eyes.balldist, eyes.dalive, eyes.balive);
         move.power = defend.power(eyes.dalive, eyes.balive, move.straight, eyes.defenddistance, eyes.balldist);
     }
+    Serial.print(eventa.orientation.x);
+    Serial.print(" ");
+    Serial.print(eyes.attackangle);
+    Serial.print(" ");
+    Serial.println(move.correction);
     move.line = ls.DirectionOfLine(eventa.orientation.x);
-    // move.line = -11;
+    move.line = -11;
     move.angle = -1;
     if(move.line != -11) {
         move.angle = move.line;

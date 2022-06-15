@@ -1,22 +1,5 @@
 #include <Attack.h>
 
-PID attackPID(HEADING_AP, HEADING_AI, HEADING_AD, HEADING_A_MAX_CORRECTION);
-
-double Attack::correction(double hpid, double attackangle, bool aalive, double balldist) {
-    double apid = -attackPID.update(attackangle > 180 ? attackangle - 360 : attackangle, 0);
-    if(aalive) {
-    //     if(balldist > CLOSE_BALL) {
-    //         return sqrt(apid*apid + hpid*hpid);
-    //     } else {
-        return apid;
-    //     }
-    } //else {
-    //     return hpid;
-    // }
-    // return hpid;
-    return 0;
-}
-
 double Attack::orbit(double straight, double balldist) {
     // //This works but is bad
     // if(straight <= 10 || straight >= 350) {
