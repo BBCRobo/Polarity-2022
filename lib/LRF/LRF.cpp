@@ -1,4 +1,6 @@
 #include <Lrf.h>
+#include <VL53L1X.h>
+#include <QWIICMUX.h>
 
 QWIICMUX LRFMUX;
 VL53L1X sensor;

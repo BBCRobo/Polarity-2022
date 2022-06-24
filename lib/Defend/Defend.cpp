@@ -1,8 +1,10 @@
 #include <Defend.h>
+#include <Attack.h>
 
 PID defendPID(HEADING_DP, HEADING_DI, HEADING_DD, HEADING_MAX_CORRECTION);
 PID sidewaysPID(SPEED_SP, SPEED_SI, SPEED_SD, SPEED_MAX_SPEED);
 PID yupPID(SPEED_FP, SPEED_FI, SPEED_FD, SPEED_MAX_SPEED);
+Attack Orbit;
 
 double Defend::correction(double hpid, bool dalive, bool defendangle) {
     if(dalive) {
@@ -32,9 +34,9 @@ double Defend::power(bool dalive, bool balive, double straight, double defenddis
                 double leftright = xleft(straight);
                 return sqrt(forwardbackward*forwardbackward + leftright*leftright);
             } else if(straight <= 30 || straight >= 330) {
-                return 24;
+                return 30;
             } else {
-                return 18;
+                return 20;
             }
         } else {
             int forwardbackward = yup(defenddistance);
@@ -58,23 +60,6 @@ double Defend::defence(double defenddistance, double straight) {
     }
 }
 
-double Defend::orbit(double straight, double balldist) {
-    if(straight <= 30 || straight >= 330) {
-        return 0;
-    } else if(straight > 180) {
-        if(balldist <= CLOSE_BALL) {
-            return straight - 90;
-        } else {
-            return straight - 70;
-        }
-    } else {
-        if(balldist <= CLOSE_BALL) {
-            return straight + 90;
-        } else {
-            return straight + 70;
-        }
-    }
-}
 
 double Defend::angle(double straight, double defenddistance, double balldist, bool dalive, bool balive) {
     if(balldist <= CLOSE_BALL && defenddistance < CENTER_Y) {
@@ -85,7 +70,7 @@ double Defend::angle(double straight, double defenddistance, double balldist, bo
             if(straight > 270 || straight < 90) {
                 return defence(defenddistance, straight);
             } else {
-                return orbit(straight, balldist);
+                return Orbit.orbit(straight, balldist);
             }
         } else {
             int forwardbackward = yup(defenddistance);

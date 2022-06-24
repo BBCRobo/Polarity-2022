@@ -43,32 +43,33 @@ void LightSensor2::init() {
     }
     location = 0;
     orig = -11.25;
-    wrong = false;
 }
 
 double LightSensor2::DirectionOfLine(float orientation) {
     int lsvalues[LS_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     int totalno = 0;
     int total = 0;
+    wrong = false;
     for(int i = 0; i < LS_COUNT; i++) {
-        // Serial.print(read(lspins[i]));
-        // Serial.print(" ");
-        if(read(lspins[i]) > green[i] + 100) {
+        Serial.print(read(lspins[i]));
+        Serial.print(" ");
+        if(read(lspins[i]) > green[i] + 80) {
             lsvalues[i] = 1;
             totalno += 1;
         } else {
             lsvalues[i] = 0;
         }
     }
-    // Serial.println(";");
+    Serial.println(";");
     for(int i = 0; i < LS_COUNT; i++) {
         // Serial.print(lsvalues[i]);
         // Serial.print(' ');
         if(lsvalues[i] > 0) {
             if((lsvalues[16] > 0 || lsvalues[17] > 0 || lsvalues[18] > 0 || lsvalues[19] > 0) && (lsvalues[15] > 0 || lsvalues[14] > 0 || lsvalues[13] > 0)) {
-                total += direc2[i];
-                if((lsvalues[0] > 0 || lsvalues[1] > 0) && (lsvalues[31] > 0 || lsvalues[30] > 0)) {
+                if((lsvalues[0] > 0 || lsvalues[1] > 0 || lsvalues[2] || lsvalues[3]) && (lsvalues[31] > 0 || lsvalues[30] > 0 || lsvalues[29] || lsvalues[28])) {
                     wrong = true;
+                } else {
+                    total += direc2[i];
                 }
             } else {
                 total += direc[i];
@@ -101,49 +102,66 @@ double LightSensor2::DirectionOfLine(float orientation) {
                 offby = origorientation - orientation;
             }
         }
-    }    
+    }
+    // Serial.print(prev);
+    // Serial.print(" ");
+    direction -= offby;
     // Serial.print(direction);
-    // Serial.print(' ');
-    // Serial.print(offby);
-    // Serial.print(' ');
+    // Serial.print(" ");
     if(totalno != int(0)) {
         if(location == 0) {
             location = 1;
             orig = direction;
-        } else if(location == 3) {
+            prev = direction;
+        }
+        if(location == 3) {
             location = 2;
-            direction = orig;
-        } else if(abs(orig - direction + offby) < 90 || abs(orig + offby + 360 - direction) < 90) {
+        }
+        if(abs(prev - direction) < 70 || abs(prev + 360 - direction) < 70 || abs(prev - direction - 360) < 70) {
             if(location == 2) {
                 location = 1;
-                direction = orig;
             }
-        } else if(location == 2) {
-            direction = orig;
-        } else if(abs(orig - direction + offby) > 90) {
+        } else if(abs(prev - direction) > 70) {
             if(location == 1) {
                 location = 2;
-                direction = orig;
             }
-        } if(location == 1) {
-            if(wrong == true) {
+        }
+        if(location == 1) {
+            if(wrong) {
                 location = 2;
-                direction = orig;
+            } else if(abs(225-direction) < 35) {
+                prev = 225;
+            } else if(abs(315 - direction) < 26) {
+                prev = 315;
+            } else if(abs(45 - direction) < 26) {
+                prev = 45;
+            } else if(abs(135 - direction) < 26) {
+                prev = 135;
+            } else if(abs(90 - direction) < 26) {
+                prev = 90;
+            } else if(abs(180 - direction) < 26) {
+                prev = 180;
+            } else if(abs(270 - direction) < 26) {
+                prev = 270;
+            } else if(abs(0 - direction) < 26 || abs(0 - direction - 360) < 26 || abs(360 - direction) < 26) {
+                prev = 0;
             }
+        }
+        if(location == 2) {
+            direction = (orig+prev)/2;
         }
     } else if(totalno == int(0)) {
         if(location == 1 || location == 0) {
             location = 0;
             direction = -11.25;
             orig = -11.25;
+            prev = -11.25;
+            offby = 0;
         } else if(location == 2 || location == 3) {
             location = 3;
-            direction = orig;
+            direction = prev;
         }
     }
-    wrong = false;
-    // Serial.print(orig);
-    // Serial.print(' ');
     // Serial.println(location);
-    return (direction);
+    return (direction + offby);
 };

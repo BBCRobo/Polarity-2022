@@ -1,40 +1,20 @@
 #include <Attack.h>
 
 double Attack::orbit(double straight, double balldist) {
-    // //This works but is bad
-    // if(straight <= 10 || straight >= 350) {
-    //     return 0;
-    // } else if(straight > 270) {
-    //     int returning = (180*sin(M_PI*(straight-360)/180)-straight)*ORBIT_CONSTANT/balldist+straight;
-    //     return returning < 0 ? returning + 360 : returning;
-    // } else if(straight > 180) {
-    //     int returning = (45*sin(M_PI*(straight-405)/90)-225-straight)*ORBIT_CONSTANT/balldist+straight;
-    //     return returning < 0 ? returning + 360 : returning;
-    // } else if(straight < 90) {
-    //     int returning = (180*sin(M_PI*(straight)/180)-straight)*ORBIT_CONSTANT/balldist+straight;
-    //     return returning;
-    // } else {
-    //     int returning = (45*sin(M_PI*(straight-135)/90)+225-straight)*ORBIT_CONSTANT/balldist+straight;
-    //     return returning;
-    // }
-    //Next attempt
-    // Serial.print(straight);
-    // Serial.print(" ");
-    // Serial.print(balldist);
-    // Serial.print(" ");
-    if(straight <= 10 || straight >= 350) {
-        // Serial.println(0);
-        return 0;
+    int returning = 0;
+    if(straight > 10 && straight < 350) {
+        if(straight >= 180) {
+            // returning = straight - (45*cos(M_PI*balldist/160)+45);
+            returning = straight - pow(euler, 0.02*(225-balldist));
+        } else {
+            // returning = straight + (45*cos(M_PI*balldist/160)+45);
+            returning = straight + pow(euler, 0.02*(225-balldist));
+        }
     }
-    if(straight >= 180) {
-        int returning = straight - asin(TARGET_DISTANCE*sin(degreesToRandians(360-straight))/sqrt(pow(balldist,2)*pow(TARGET_DISTANCE,2)-2*balldist*TARGET_DISTANCE*cos(degreesToRandians(360-straight)))) - (1+240.824/(balldist-8.29412)+0.5*(straight - asin(TARGET_DISTANCE*sin(degreesToRandians(360-straight))/sqrt(pow(balldist,2)*pow(TARGET_DISTANCE,2)-2*balldist*TARGET_DISTANCE*cos(degreesToRandians(360-straight))))))/2;
-        // Serial.println(returning);
-        return returning;
-    } else {
-        int returning = straight + asin(TARGET_DISTANCE*sin(degreesToRandians(straight))/sqrt(pow(balldist,2)*pow(TARGET_DISTANCE,2)-2*balldist*TARGET_DISTANCE*cos(degreesToRandians(straight)))) + (1+240.824/(balldist-8.29412)+0.5*(straight + asin(TARGET_DISTANCE*sin(degreesToRandians(straight))/sqrt(pow(balldist,2)*pow(TARGET_DISTANCE,2)-2*balldist*TARGET_DISTANCE*cos(degreesToRandians(straight))))))/2;
-        // Serial.println(returning);
-        return returning;
+    if(balldist > 80) {
+        returning = straight;
     }
+    return returning;
 }
 
 double Attack::angle(bool aalive, bool balive, bool dalive, double attackdistance, double defendangle, double balldist, double straight) {

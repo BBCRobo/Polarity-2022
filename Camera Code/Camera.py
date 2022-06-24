@@ -6,11 +6,8 @@ import sensor, image, time, math
 import pyb
 from pyb import UART, LED
 
-thresholds = [(69, 100, -23, 127, 46, 127), (48, 72, -25, 22, -128, -26)]
-#thresholds = [(39, 62, -35, -16, 34, 127), (30, 47, -22, 0, -128, -12)]
-# Kinda Works orangethreshold = [(62, 69, 30, 126, 24, 127)]
-# orangethreshold = [(61, 74, 23, 127, -128, 127)]
-orangethreshold = [(54, 100, 20, 127, -128, 127)]
+thresholds = [(68, 100, -26, 127, 14, 127), (46, 63, -12, 127, -128, -44)]
+orangethreshold = [(0, 100, 23, 127, -2, 127)]
 
 attackisyellow = True
 isdebug = True
@@ -153,7 +150,7 @@ while(True):
         #data[7] = 0
         #for i in yellowBlobs:
             #if i[4] > data[7]: data[7] = i[4]
-            #elif i[4] > 150: data[7] += i[4]
+            #elif i[4] > 150: data[7] += i[4]s
 
     #data[7] = int(data[7]/10)
     #print(data[7])

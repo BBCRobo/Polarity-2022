@@ -45,12 +45,6 @@ struct Vector3D {
 #define HEADING_KD 0.06
 #define HEADING_MAX_CORRECTION 100
 
-//Attack PID
-#define HEADING_AP 0.15
-#define HEADING_AI 0
-#define HEADING_AD 0.11
-#define HEADING_A_MAX_CORRECTION 10
-
 //Defend PID
 #define HEADING_DP 0.2
 #define HEADING_DI 0
@@ -79,8 +73,6 @@ struct Vector3D {
 #define CAM_NO_DATA 250
 
 //CAMERA STRENGTH
-#define FAR_BALL 100
-//CAMERA STRENGTH
 #define CLOSE_BALL 60
 
 struct MoveData{
@@ -90,11 +82,11 @@ struct MoveData{
 	int nosee;
 };
 
+//LRFs
+#define LRF_MUX_ENABLE 0
+
 #define MAX_DEFENCE 40
 #define CENTER_Y 56
-#define CENTER_X 0
-#define LRF_MUX_ENABLE 0
-#define ORBIT_CONSTANT 3
 #define TARGET_DISTANCE 11
 
 #endif
