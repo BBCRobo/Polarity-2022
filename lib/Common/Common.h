@@ -15,6 +15,8 @@ double radiansToDegrees(double radians);
 
 float floatMod(float x, float m);
 
+float roundtodecimal(float value, unsigned char prec);
+
 #define motorno 4
 
 struct Vector3D {
@@ -45,15 +47,25 @@ struct Vector3D {
 #define HEADING_KD 0.06
 #define HEADING_MAX_CORRECTION 100
 
+//Attack Horizontal PID
+#define HEADING_AHP 2
+#define HEADING_AHI 0
+#define HEADING_AHD 0.15
+
+//Attack Vertical PID
+#define HEADING_AVP 1
+#define HEADING_AVI 0
+#define HEADING_AVD 0.03
+
 //Defend PID
 #define HEADING_DP 0.2
 #define HEADING_DI 0
 #define HEADING_DD 0.03
 
 //Sideways PID
-#define SPEED_SP 0.5
+#define SPEED_SP 0.7
 #define SPEED_SI 0
-#define SPEED_SD 0.02
+#define SPEED_SD 0.03
 
 //Forwards Backwards (YUP) PID
 #define SPEED_FP 0.5

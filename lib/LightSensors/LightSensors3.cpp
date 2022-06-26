@@ -41,8 +41,8 @@ void LightSensor3::init() {
     pinMode(LS_OUTPUT_1, INPUT);
     pinMode(LS_OUTPUT_2, INPUT);
     for(int i = 0; i < LS_COUNT; i++) {
-        green[i] = read(lspins[i]);
-        // green[i] = EEPROM.read(i);
+        // green[i] = read(lspins[i]);
+        green[i] = EEPROM.read(i)*4;
     }
     location = 0;
     prev = -11.25;
@@ -89,17 +89,16 @@ double LightSensor3::DirectionOfLine(float orientation, int position) {
     double vector_direction[2] = {0,0};
     double expected[3] = {0,0,0};
     for(int i = 0; i < (LS_COUNT); i++) {
-        // Serial.print(read(i));
-        // Serial.print(" ");
-        if(read(lspins[i]) > green[i]) {
+        Serial.print(read(lspins[i]));
+        Serial.print(" ");
+        if(int(read(lspins[i])/4)*4 > green[i]) {
             lsvalues[i] = 1;
             totalno += 1;
         } else {
             lsvalues[i] = 0;
         }
     }
-    // Serial.println(";");
-    // delay(1000);
+    Serial.println(";");
     for(int i = 0; i < LS_COUNT; i++) {
         // Serial.print(lsvalues[i]);
         // Serial.print(' ');
@@ -113,66 +112,73 @@ double LightSensor3::DirectionOfLine(float orientation, int position) {
     vector_direction[1] = total[1]/totalno;
     vector_modulus = sqrt(pow(vector_direction[0], 2) + pow(vector_direction[1], 2));
     direction = atan2(vector_direction[1],vector_direction[0]);
+    // Serial.print(direction);
+    // Serial.print(" ");
     direction = (orientation > 180 ? orientation - 360 : orientation)*M_PI/180 + direction;
-    Serial.print((orientation > 180 ? orientation - 360 : orientation)*M_PI/180);
-    Serial.print(" ");
-    Serial.print(location);
-    Serial.print(" ");
-    Serial.print(prev);
-    Serial.print(" ");
-    Serial.print(vector_modulus);
-    Serial.print(" ");
-    Serial.print(direction);
-    Serial.print(" ");
-    if(position != -1) {
-        if(position%10 < 2) {
-            if(position-position%10 < 2) {
-                expected[0] = M_PI/2;
-                expected[1] = M_PI;
-                expected[2] = 0;
-            } else if(position-position%10 > 3) {
-                expected[0] = -M_PI;
-                expected[1] = -M_PI/2;
-                expected[2] = 0;
-            } else {
-                expected[0] = -M_PI/2;
-                expected[1] = M_PI/2;
-                expected[2] = 1;
-            }
-        } else if(position%10 > 5) {
-            if(position-position%10 < 2) {
-                expected[0] = 0;
-                expected[1] = M_PI/2;
-                expected[2] = 0;
-            } else if(position-position%10 > 3) {
-                expected[0] = -M_PI/2;
-                expected[1] = 0;
-                expected[2] = 0;
-            } else {
-                expected[0] = -M_PI/2;
-                expected[1] = M_PI/2;
-                expected[2] = 0;
-            }
-        } else {
-            if(position-position%10 < 2) {
-                expected[0] = 0;
-                expected[1] = M_PI;
-                expected[2] = 0;
-            } else if(position-position%10 > 3) {
-                expected[0] = -M_PI;
-                expected[1] = 0;
-                expected[2] = 0;
-            } else {
-                expected[0] = 0;
-                expected[1] = 0;
-                expected[2] = -1;
-            }
-        }
-    } else {
-        expected[0] = 0;
-        expected[1] = 0;
-        expected[2] = -2;
+    while(direction < -M_PI) {
+        direction += M_PI*2;
     }
+    while(direction >= M_PI) {
+        direction -= M_PI*2;
+    }
+    // Serial.println(direction);
+    // Serial.print(vector_direction[0]);
+    // Serial.print(" ");
+    // Serial.print(vector_direction[1]);
+    // Serial.print(" ");
+    // Serial.print(vector_modulus);
+    // Serial.print(" ");
+    // Serial.print(direction);
+    // Serial.print(" ");
+    // if(position != -1) {
+    //     if(position%10 < 2) {
+    //         if(position-position%10 < 2) {
+    //             expected[0] = M_PI/2;
+    //             expected[1] = M_PI;
+    //             expected[2] = 0;
+    //         } else if(position-position%10 > 3) {
+    //             expected[0] = -M_PI;
+    //             expected[1] = -M_PI/2;
+    //             expected[2] = 0;
+    //         } else {
+    //             expected[0] = -M_PI/2;
+    //             expected[1] = M_PI/2;
+    //             expected[2] = 1;
+    //         }
+    //     } else if(position%10 > 5) {
+    //         if(position-position%10 < 2) {
+    //             expected[0] = 0;
+    //             expected[1] = M_PI/2;
+    //             expected[2] = 0;
+    //         } else if(position-position%10 > 3) {
+    //             expected[0] = -M_PI/2;
+    //             expected[1] = 0;
+    //             expected[2] = 0;
+    //         } else {
+    //             expected[0] = -M_PI/2;
+    //             expected[1] = M_PI/2;
+    //             expected[2] = 0;
+    //         }
+    //     } else {
+    //         if(position-position%10 < 2) {
+    //             expected[0] = 0;
+    //             expected[1] = M_PI;
+    //             expected[2] = 0;
+    //         } else if(position-position%10 > 3) {
+    //             expected[0] = -M_PI;
+    //             expected[1] = 0;
+    //             expected[2] = 0;
+    //         } else {
+    //             expected[0] = 0;
+    //             expected[1] = 0;
+    //             expected[2] = -1;
+    //         }
+    //     }
+    // } else {
+    //     expected[0] = 0;
+    //     expected[1] = 0;
+    //     expected[2] = -2;
+    // }
 
     if(totalno != 0) {
         if(location == 0) {
@@ -182,79 +188,74 @@ double LightSensor3::DirectionOfLine(float orientation, int position) {
         if(location == 3) {
             location = 2;
         }
-        if(abs(prev - direction) < 1.22 || abs(prev + M_PI*2 - direction) < 1.22 || abs(prev - direction - M_PI*2) < 1.22) {
+        if(vector_modulus > 0.75 && (abs(prev - direction) < 0.5 || abs(prev - direction + M_PI*2) < 0.5 || abs(prev - direction - M_PI*2) < 0.5)) {
             if(location == 2) {
                 location = 1;
             }
-        } else if(abs(prev - direction) > 1.22) {
+        } else if(abs(prev - direction) > 0.5 || vector_modulus < 0.5) {
             if(location == 1) {
                 location = 2;
             }
         }
-        if(expected[2] == 0) {
-            if(location == 1) {
-                if(direction > expected[1] || direction < expected[0]) {
-                    location = 2;
-                    direction = (expected[0]+expected[1])/2;
-                } else if(vector_modulus < 0.5) {
-                    location = 2;
-                    direction = (expected[0]+expected[1])/2;
-                } else {
-                    prev = direction;
-                }
-            } else if(location == 2) {
-                if(direction < expected[1] && direction > expected[0] && vector_modulus >= 0.5) {
-                    location = 1;
-                    prev = direction;
-                } else {
-                    direction = prev;
-                }
-            }
-        } else if(expected[2] == 1) {
-            if(location == 1) {
-                if(direction < expected[1] && direction > expected[0]) {
-                    location = 2;
-                    direction = (expected[0]+expected[1])/2;
-                } else if(vector_modulus < 0.5) {
-                    location = 2;
-                    direction = (expected[0]+expected[1])/2;
-                } else {
-                    prev = direction;
-                }
-            } else if(location == 2) {
-                if((direction > expected[1] || direction < expected[0]) && vector_modulus >= 0.5) {
-                    location = 1;
-                    prev = direction;
-                } else {
-                    direction = prev;
-                }
-            }
-        } else if(expected[2] < 0) {
-            if(location == 1) {
-                if(vector_modulus < 0.5) {
-                    location = 2;
-                    direction = prev;
-                } else {
-                    prev = direction;
-                }
-            } else if(location == 2) {
-                direction = prev;
-            }
+        // if(expected[2] == 0) {
+        //     if(location == 1) {
+        //         if(direction > expected[1] || direction < expected[0]) {
+        //             location = 2;
+        //             direction = (expected[0]+expected[1])/2;
+        //         } else if(vector_modulus < 0.5) {
+        //             location = 2;
+        //             direction = (expected[0]+expected[1])/2;
+        //         } else {
+        //             prev = direction;
+        //         }
+        //     } else if(location == 2) {
+        //         if(direction < expected[1] && direction > expected[0] && vector_modulus >= 0.5) {
+        //             location = 1;
+        //             prev = direction;
+        //         } else {
+        //             direction = prev;
+        //         }
+        //     }
+        // } else if(expected[2] == 1) {
+        //     if(location == 1) {
+        //         if(direction < expected[1] && direction > expected[0]) {
+        //             location = 2;
+        //             direction = (expected[0]+expected[1])/2;
+        //         } else if(vector_modulus < 0.5) {
+        //             location = 2;
+        //             direction = (expected[0]+expected[1])/2;
+        //         } else {
+        //             prev = direction;
+        //         }
+        //     } else if(location == 2) {
+        //         if((direction > expected[1] || direction < expected[0]) && vector_modulus >= 0.5) {
+        //             location = 1;
+        //             prev = direction;
+        //         } else {
+        //             direction = prev;
+        //         }
+        //     }
+        // } else if(expected[2] < 0) {
+        if(location == 1) {
+            prev = direction;
+        } else if(location == 2) {
+            direction = prev;
         }
+        // }
     } else {
         if(location == 1 || location == 0) {
             location = 0;
             direction = -11.25;
             prev = -11.25;
         } else if(location == 2 || location == 3) {
-            if(expected[2] == -1) {
-                location = 0;
-                direction = -11.25;
-                prev = -11.25;
-            } else {
-                location = 3;
-                direction = prev;
-            }
+            // if(expected[2] == -1) {
+            //     location = 0;
+            //     direction = -11.25;
+            //     prev = -11.25;
+            // } else {
+            location = 3;
+            direction = prev;
+            // }
         }
     }
     if(direction != -11.25) {
@@ -267,6 +268,6 @@ double LightSensor3::DirectionOfLine(float orientation, int position) {
         }
         direction *= 180/M_PI;
     }
-    Serial.println(direction);
+    // Serial.println(direction);
     return direction;
 }

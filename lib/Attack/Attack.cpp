@@ -4,15 +4,15 @@ double Attack::orbit(double straight, double balldist) {
     int returning = 0;
     if(straight > 10 && straight < 350) {
         if(straight >= 180) {
-            // returning = straight - (45*cos(M_PI*balldist/160)+45);
-            returning = straight - pow(euler, 0.02*(225-balldist));
+            // returning = straight - pow(euler, 0.02*(225-balldist));
+            returning = straight - pow(euler, 0.1*(60-balldist))-5;
         } else {
-            // returning = straight + (45*cos(M_PI*balldist/160)+45);
-            returning = straight + pow(euler, 0.02*(225-balldist));
+            // returning = straight + pow(euler, 0.02*(225-balldist));
+            returning = straight + pow(euler, 0.1*(60-balldist))+5;
         }
     }
-    if(balldist > 80) {
-        returning = straight;
+    if(returning > straight + 90) {
+        returning = straight + 90;
     }
     return returning;
 }

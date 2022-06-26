@@ -6,8 +6,8 @@ import sensor, image, time, math
 import pyb
 from pyb import UART, LED
 
-thresholds = [(68, 100, -26, 127, 14, 127), (46, 63, -12, 127, -128, -44)]
-orangethreshold = [(0, 100, 23, 127, -2, 127)]
+thresholds = [(70, 100, 11, 127, 23, 127), (48, 100, -13, 127, -128, -38)]
+orangethreshold = [(0, 100, 35, 127, 17, 127)]
 
 attackisyellow = True
 isdebug = True
@@ -17,7 +17,7 @@ sensor.set_pixformat(sensor.RGB565) # Set pixel format to RGB565 (or GRAYSCALE)
 sensor.set_framesize(sensor.QVGA)   # Set frame size to QVGA (320x240)
 sensor.skip_frames(time = 2000)
 sensor.set_auto_gain(False)
-sensor.set_auto_whitebal(False, (-6.02073, -5.62345, -3.65883))
+sensor.set_auto_whitebal(False, (-4.52867, -6.02073, -3.86825))
 sensor.set_brightness(1)
 sensor.set_contrast(0)
 sensor.set_saturation(2)
@@ -42,11 +42,8 @@ def biggestBlob(bBlob):
                 #golfballBlob = blob
     #return golfballBlob
 
-def sortBlob(blobs, colour):
+def sortBlob(blobs):
     if len(blobs) != 0:
-        #if colour == 'o' and biggestBlob(blobs).area() > 200:
-            #largestBlob = golfballblob(blobs)
-        #else:
         largestBlob = biggestBlob(blobs)
         if isdebug:
             img.draw_rectangle(largestBlob.rect())
@@ -127,9 +124,9 @@ while(True):
             blueBlobs.append(blob)
     #print(yellowBlobs)
     if attackisyellow:
-        data[1], data[2] = sortBlob(yellowBlobs, 'y')
-        data[3], data[4] = sortBlob(blueBlobs, 'b')
-        data[5], data[6] = sortBlob(orangeBlobs, 'o')
+        data[1], data[2] = sortBlob(yellowBlobs)
+        data[3], data[4] = sortBlob(blueBlobs)
+        data[5], data[6] = sortBlob(orangeBlobs)
         acorner = goalcorners(yellowBlobs, (int(img.width()/2), int(img.height()/2)))
         dcorner = goalcorners(blueBlobs, (int(img.width()/2), int(img.height()/2)))
         data[7], data[8] = int(acorner[0]), int(acorner[1])
