@@ -92,6 +92,15 @@ double LightSensor4::AngleBetweenClusters(float centre1, float centre2) {
     return anglebetween;
 }
 
+double LightSensor4::AngleBetweenAngles(float angle1, float angle2) {
+    double vector1[2] = {cos(angle1),sin(angle2)};
+    double vector2[2] = {cos(angle1),sin(angle2)};
+    double final_vector[2] = {(vector1[0]+vector2[0])/2,(vector1[1]+vector2[1])/2};
+    double final_angle = atan2(final_vector[1], final_vector[0]);
+    double anglebetween = 2*min(abs(final_angle-atan2(vector1[1],vector1[0])), abs(final_angle-atan2(vector2[1],vector2[0])));
+    return anglebetween;
+}
+
 double LightSensor4::DirectionOfLine(float orientation, int position) {
     int lsvalues[LS_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     int clusters[16][2] = {{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}};
@@ -111,8 +120,8 @@ double LightSensor4::DirectionOfLine(float orientation, int position) {
     // Serial.println(";");
     clustering = false;
     for(int i = 0; i < LS_COUNT; i++) {
-        // Serial.print(lsvalues[i]);
-        // Serial.print(' ');
+        Serial.print(lsvalues[i]);
+        Serial.print(' ');
         if(clustering) {
             clusters[clusterno][1] = i;
             if(lsvalues[i] == 0) {
@@ -124,9 +133,11 @@ double LightSensor4::DirectionOfLine(float orientation, int position) {
                 clustering = true;
                 clusterno += 1;
                 clusters[clusterno][0] = i;
+                clusters[clusterno][1] = i;
             }
         }
     }
+    Serial.println(";");
     int final_clusters[4][2] = {{-1,-1},{-1,-1},{-1,-1},{-1,-1}}; 
     clusterno = 0;
     for(int i = 0; i < 16; i++) {
@@ -162,12 +173,12 @@ double LightSensor4::DirectionOfLine(float orientation, int position) {
         float centre = (final_clusters[i][0] + (final_clusters[i][0] > final_clusters[i][1] ? final_clusters[i][1]+32 : final_clusters[i][1]))/2;
         centre -= centre > 31 ? 32 : 0;
         cluster_centre[i] = centre;
-        Serial.print("{");
-        Serial.print(final_clusters[i][0]);
-        Serial.print(",");
-        Serial.print(final_clusters[i][1]);
-        Serial.print("}");
-        Serial.print(" ");
+        // Serial.print("{");
+        // Serial.print(final_clusters[i][0]);
+        // Serial.print(",");
+        // Serial.print(final_clusters[i][1]);
+        // Serial.print("}");
+        // Serial.print(" ");
     }
     clusterno += 1;
     if(totalno > 0) {
@@ -228,16 +239,16 @@ double LightSensor4::DirectionOfLine(float orientation, int position) {
                 }
             }
         }
+        direction *= M_PI/180;
     } else {
         direction = -11.25;
     }
-    Serial.print(floatMod(11.25*cluster_centre[0], 360));
-    Serial.print(" ");
-    Serial.print(floatMod(11.25*cluster_centre[1], 360));
-    Serial.print(" ");
-    Serial.print(floatMod(11.25*cluster_centre[2], 360));
-    Serial.print(" ");
-    Serial.println(direction);
+    // Serial.print(floatMod(11.25*cluster_centre[0], 360));
+    // Serial.print(" ");
+    // Serial.print(floatMod(11.25*cluster_centre[1], 360));
+    // Serial.print(" ");
+    // Serial.print(floatMod(11.25*cluster_centre[2], 360));
+    // Serial.print(" ");
 
     direction = (orientation > 180 ? orientation - 360 : orientation)*M_PI/180 + direction;
     while(direction < -M_PI) {
@@ -246,6 +257,10 @@ double LightSensor4::DirectionOfLine(float orientation, int position) {
     while(direction >= M_PI) {
         direction -= M_PI*2;
     }
+    // Serial.print(direction);
+    // Serial.print(" ");
+    // Serial.print(prev);
+    // Serial.print(" ");
     // if(position != -1) {
     //     if(position%10 < 2) {
     //         if(position-position%10 < 2) {
@@ -304,11 +319,11 @@ double LightSensor4::DirectionOfLine(float orientation, int position) {
         if(location == 3) {
             location = 2;
         }
-        if((abs(prev - direction) < 1.75 || abs(prev - direction + M_PI*2) < 1.75 || abs(prev - direction - M_PI*2) < 1.75)) {
+        if(AngleBetweenAngles(prev,direction) < 1.22) {
             if(location == 2) {
                 location = 1;
             }
-        } else if(abs(prev - direction) > 1.75) {
+        } else {
             if(location == 1) {
                 location = 2;
             }
@@ -354,15 +369,24 @@ double LightSensor4::DirectionOfLine(float orientation, int position) {
         // } else if(expected[2] < 0) {
         if(location == 1) {
             prev = direction;
+            direction += M_PI;
+            lastseenline = millis();
         } else if(location == 2) {
-            direction = prev;
+            lastline = direction;
         }
         // }
     } else {
-        if(location == 1 || location == 0) {
+        if(location == 0) {
             location = 0;
             direction = -11.25;
             prev = -11.25;
+        } else if(location == 1) {
+            unsigned long now = millis();
+            if(now - lastseenline > 1000) {
+                location = 0;
+                direction = -11.25;
+                prev = -11.25;
+            }
         } else if(location == 2 || location == 3) {
             // if(expected[2] == -1) {
             //     location = 0;
@@ -370,7 +394,7 @@ double LightSensor4::DirectionOfLine(float orientation, int position) {
             //     prev = -11.25;
             // } else {
             location = 3;
-            direction = prev;
+            direction = lastline;
             // }
         }
     }
@@ -384,5 +408,8 @@ double LightSensor4::DirectionOfLine(float orientation, int position) {
         }
         direction *= 180/M_PI;
     }
+    // Serial.print(location);
+    // Serial.print(" ");
+    // Serial.println(direction);
     return direction;
 }

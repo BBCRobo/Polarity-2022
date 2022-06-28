@@ -6,7 +6,7 @@ import sensor, image, time, math
 import pyb
 from pyb import UART, LED
 
-thresholds = [(70, 100, 11, 127, 23, 127), (48, 100, -13, 127, -128, -38)]
+thresholds = [(70, 100, 11, 127, 23, 127), (41, 100, -7, 127, -128, -47)]
 orangethreshold = [(0, 100, 35, 127, 17, 127)]
 
 attackisyellow = True
@@ -17,7 +17,7 @@ sensor.set_pixformat(sensor.RGB565) # Set pixel format to RGB565 (or GRAYSCALE)
 sensor.set_framesize(sensor.QVGA)   # Set frame size to QVGA (320x240)
 sensor.skip_frames(time = 2000)
 sensor.set_auto_gain(False)
-sensor.set_auto_whitebal(False, (-4.52867, -6.02073, -3.86825))
+sensor.set_auto_whitebal(False, (-4.76043, -6.02073, -3.86825))
 sensor.set_brightness(1)
 sensor.set_contrast(0)
 sensor.set_saturation(2)
