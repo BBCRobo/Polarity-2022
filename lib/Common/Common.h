@@ -96,6 +96,12 @@ struct MoveData{
 #define MAX_DEFENCE 35
 #define CENTER_Y 75
 #define TARGET_DISTANCE 11
-#define ATTACK_GOAL_YELLOW 1
+
+// Editable
+#define ATTACK_GOAL_YELLOW true
+#define FindLS false
+#define ATTACKER false
+#define DEFENDER true
+
 
 #endif

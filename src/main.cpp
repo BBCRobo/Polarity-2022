@@ -5,8 +5,6 @@
 #include <Pins.h>
 #include <Common.h>
 #include <Motors.h>
-#include <LightSensors2.h>
-#include <LightSensors3.h>
 #include <LightSensors4.h>
 #include <PID.h>
 #include <Camera.h>
@@ -17,9 +15,8 @@
 #include <Attack.h>
 #include <Defend.h>
 
+
 Motors motorArray = Motors();
-LightSensor2 ls;
-LightSensor3 lsv;
 LightSensor4 lsc;
 Camera eyes;
 MoveData move;
@@ -30,14 +27,12 @@ bno::Adafruit_BNO055 compass;
 sensors_event_t gyro;
 Attack attack;
 Defend defend;
-#define FindLS 0
 
 
 void setup() {
     Serial.begin(9600);
     Serial.print("Setup Started...");
     motorArray.init();
-    // ls.init();
     lsc.init();
     eyes.init();
     //BNO Init
@@ -48,7 +43,7 @@ void setup() {
     move.surge = false;
     move.angle = -1;
     move.nosee = 0;
-    if(FindLS == 1) {
+    if(FindLS) {
         lsc.FindGreen();
         pinMode(13, OUTPUT);
         digitalWrite(13, HIGH);
@@ -106,7 +101,7 @@ void loop() {
         float pos_y = (a_y == -1000 ? 0 : a_y) + (d_y == -1000 ? 0 : d_y);
     }
 
-    if (false){
+    if (ATTACKER){
         if(eyes.aalive && eyes.attackdistance < 100) {
             if(eyes.attackangle < 80) {
                 move.correction = headingPID.update(gyro.orientation.x, gyro.orientation.x + eyes.attackangle);
@@ -130,7 +125,7 @@ void loop() {
             move.power = 30;
         }
         if(eyes.balive != true) {move.angle = -1;}
-    } else if(true){
+    } else if(DEFENDER) {
         if(eyes.dalive) {
             move.correction = headingPID.update(gyro.orientation.x + 180, gyro.orientation.x + eyes.defendangle);
         } else {
@@ -142,8 +137,6 @@ void loop() {
         Serial.print(" ");
         Serial.println(move.power);
     }
-    // move.line = ls.DirectionOfLine(gyro.orientation.x);
-    // move.line = lsv.DirectionOfLine(gyro.orientation.x, position);
     move.line = lsc.DirectionOfLine(gyro.orientation.x, position);
     move.line = -11.25;
     // move.angle = -1;

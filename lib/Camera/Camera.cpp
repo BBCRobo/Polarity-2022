@@ -24,7 +24,7 @@ void Camera::read() {
             attackdistance = aalive ? calcdistance(camBuffer[0], camBuffer[1]) : -1;
             defendangle = dalive ? calcangle(camBuffer[2], camBuffer[3]) : -1;
             defenddistance = dalive ? calcdistance(camBuffer[2], camBuffer[3]) : -1;
-            if(ATTACK_GOAL_YELLOW == 1) {
+            if(ATTACK_GOAL_YELLOW) {
                 attackdistance = aalive ? log((attackdistance-8.79885*sin((1.00845*M_PI/180)*(attackangle-85.0709))-103.88)/(3.67491*sin((1.95003*M_PI/180)*(attackangle-26.6964))-44.0313))/(0.00319501*sin((1.03966*M_PI/180)*(attackangle-80.5454))-0.0410537) : -1;
                 defenddistance = dalive ? (0.115629*sin(M_PI*(defendangle-90)/180)+0.602603)*pow(euler, (-0.002693*sin(M_PI*(defendangle-90)/180)+0.0473084)*defenddistance)+0.49365*sin(M_PI*(defendangle-270)/180)-11.5006 : -1;
             } else {
