@@ -76,3 +76,6 @@
 #define LRF_2 31
 #define LRF_3 32
 #define LRF_4 33
+
+// Kicker
+#define KICKER_PIN 26

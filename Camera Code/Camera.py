@@ -6,7 +6,7 @@ import sensor, image, time, math
 import pyb
 from pyb import UART, LED
 
-thresholds = [(70, 100, 11, 127, 23, 127), (41, 100, -7, 127, -128, -47)]
+thresholds = [(70, 100, 11, 127, 23, 127), (41, 100, -7, 127, -128, -40)]
 orangethreshold = [(0, 100, 35, 127, 17, 127)]
 
 attackisyellow = True
@@ -115,6 +115,7 @@ while(True):
 
     yellowBlobs =[]
     blueBlobs = []
+    orangeBlobs = []
     orangeBlobs = img.find_blobs(orangethreshold, x_stride=1, y_stride=1, area_threshold=0, pixel_threshold=0, merge=False, margin=23)
 
     for blob in goalBlobs:
@@ -122,7 +123,7 @@ while(True):
             yellowBlobs.append(blob)
         elif blob.code() == 2:
             blueBlobs.append(blob)
-    #print(yellowBlobs)
+    #print(orangeBlobs)
     if attackisyellow:
         data[1], data[2] = sortBlob(yellowBlobs)
         data[3], data[4] = sortBlob(blueBlobs)
@@ -131,7 +132,7 @@ while(True):
         dcorner = goalcorners(blueBlobs, (int(img.width()/2), int(img.height()/2)))
         data[7], data[8] = int(acorner[0]), int(acorner[1])
         data[9], data[10] = int(dcorner[0]), int(dcorner[1])
-        print(data[1], data[2])
+        #print(data[1], data[2])
         #print(math.sqrt((data[5]-120)**2+(data[6]-120)**2))#, math.sqrt((data[1]-60)**2+(data[2]-60)**2))
         #data[7] = 0
         #for i in blueBlobs:

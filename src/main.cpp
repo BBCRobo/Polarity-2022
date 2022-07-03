@@ -24,8 +24,8 @@ LightSensor4 lsc;
 Camera eyes;
 MoveData move;
 PID headingPID(HEADING_KP, HEADING_KI, HEADING_KD, HEADING_MAX_CORRECTION);
-PID attackhorizontalPID(HEADING_AHP, HEADING_AHI, HEADING_AHD, 20);
-PID attackverticalPID(HEADING_AVP, HEADING_AVI, HEADING_AVD, 20);
+PID attackhorizontalPID(SPEED_AHP, SPEED_AHI, SPEED_AHD, ATTACK_MAX_SPEED);
+PID attackverticalPID(SPEED_AVP, SPEED_AVI, SPEED_AVD, ATTACK_MAX_SPEED);
 bno::Adafruit_BNO055 compass;
 sensors_event_t gyro;
 Attack attack;
@@ -59,18 +59,30 @@ void setup() {
         delay(1000);
         digitalWrite(13, LOW);
         for(int i = 0; i < LS_COUNT; i++) {
-            lsc.green[i] = (lsc.lsdebug[i][0] + lsc.lsdebug[i][1])/2;
+            lsc.green[i] = lsc.lsdebug[i][0]*0.5 + lsc.lsdebug[i][1]*0.5;
+            if(i == 0 && ROBOT == 2) {
+                lsc.green[i] = lsc.lsdebug[i][0]*0.6 + lsc.lsdebug[i][1]*0.4;
+                lsc.green[i] -= 60;
+            }
             // Serial.print(lsv.green[i]);
             // Serial.print(" ");
             EEPROM.update(i, int(lsc.green[i]/4));
         }
         // Serial.println(";");
     }
+    // pinMode(KICKER_PIN, OUTPUT);
+    // digitalWrite(KICKER_PIN, LOW);
     Serial.println("done");
 }
 
 
 void loop() {
+    // delay(10000);
+    // Serial.println("kick");
+    // digitalWrite(KICKER_PIN, HIGH);
+    // delay(10000);
+    // Serial.println("charge")
+    // digitalWrite(KICKER_PIN, LOW);
     compass.getEvent(&gyro);
     eyes.read();
     move.straight = eyes.straight;
@@ -94,16 +106,16 @@ void loop() {
         float pos_y = (a_y == -1000 ? 0 : a_y) + (d_y == -1000 ? 0 : d_y);
     }
 
-    if (true){
-        // if(eyes.aalive && eyes.attackdistance < 100) {
-        //     if(eyes.attackangle < 80) {
-        //         move.correction = headingPID.update(gyro.orientation.x, gyro.orientation.x + eyes.attackangle);
-        //     } else {
-        //         move.correction = headingPID.update(gyro.orientation.x, gyro.orientation.x - 360 + eyes.attackangle);
-        //     }
-        // } else {
-        move.correction = headingPID.update(gyro.orientation.x > 180 ? gyro.orientation.x - 360 : gyro.orientation.x, 0);
-        // }
+    if (false){
+        if(eyes.aalive && eyes.attackdistance < 100) {
+            if(eyes.attackangle < 80) {
+                move.correction = headingPID.update(gyro.orientation.x, gyro.orientation.x + eyes.attackangle);
+            } else {
+                move.correction = headingPID.update(gyro.orientation.x, gyro.orientation.x - 360 + eyes.attackangle);
+            }
+        } else {
+            move.correction = headingPID.update(gyro.orientation.x > 180 ? gyro.orientation.x - 360 : gyro.orientation.x, 0);
+        }
         float horizontal_move = -attackhorizontalPID.update(sin(M_PI*eyes.straight/180)*eyes.balldist, abs(eyes.straight > 180 ? eyes.straight - 360 : eyes.straight) > 90 ? (eyes.straight > 180 ? (eyes.straight - 360)/10 : (eyes.straight)/10) : 0);
         float vertical_move = -attackverticalPID.update(cos(M_PI*eyes.straight/180)*eyes.balldist, 10);//abs(eyes.straight > 180 ? eyes.straight - 360 : eyes.straight) > 90 ? 0 : 10);
         move.angle = radiansToDegrees(atan2(horizontal_move, vertical_move));
@@ -118,30 +130,23 @@ void loop() {
             move.power = 30;
         }
         if(eyes.balive != true) {move.angle = -1;}
-        // Serial.print(eyes.straight);
-        // Serial.print(" ");
-        // Serial.print(horizontal_move);
-        // Serial.print(" ");
-        // Serial.print(vertical_move);
-        // Serial.print(" ");
-        // Serial.print(move.angle);
-        // Serial.print(" ");
-        // Serial.println(move.power);
-    } else if(false){
+    } else if(true){
         if(eyes.dalive) {
             move.correction = headingPID.update(gyro.orientation.x + 180, gyro.orientation.x + eyes.defendangle);
         } else {
             move.correction = headingPID.update(gyro.orientation.x > 180 ? gyro.orientation.x - 360 : gyro.orientation.x, 0);
         }
-        // move.correction = defend.correction(headingPID.update(gyro.orientation.x > 180 ? gyro.orientation.x - 360 : gyro.orientation.x, 0), eyes.dalive, eyes.defendangle);
         move.angle = defend.angle(move.straight, eyes.defenddistance, eyes.balldist, eyes.dalive, eyes.balive);
         move.power = defend.power(eyes.dalive, eyes.balive, move.straight, eyes.defenddistance, eyes.balldist);
+        Serial.print(move.angle);
+        Serial.print(" ");
+        Serial.println(move.power);
     }
     // move.line = ls.DirectionOfLine(gyro.orientation.x);
     // move.line = lsv.DirectionOfLine(gyro.orientation.x, position);
     move.line = lsc.DirectionOfLine(gyro.orientation.x, position);
-    // move.line = -11.25;
-    move.angle = -1;
+    move.line = -11.25;
+    // move.angle = -1;
     if(move.line != -11.25) {
         move.angle = move.line;
         move.power = 20;

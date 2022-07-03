@@ -48,32 +48,28 @@ struct Vector3D {
 #define HEADING_MAX_CORRECTION 100
 
 //Attack Horizontal PID
-#define HEADING_AHP 2
-#define HEADING_AHI 0
-#define HEADING_AHD 0.15
+#define SPEED_AHP 2
+#define SPEED_AHI 0
+#define SPEED_AHD 0.15
 
 //Attack Vertical PID
-#define HEADING_AVP 1
-#define HEADING_AVI 0
-#define HEADING_AVD 0.03
+#define SPEED_AVP 1
+#define SPEED_AVI 0
+#define SPEED_AVD 0.03
+#define ATTACK_MAX_SPEED 20
 
-//Defend PID
-#define HEADING_DP 0.2
-#define HEADING_DI 0
-#define HEADING_DD 0.03
+//Defend Horizontal PID
+#define SPEED_DHP 2
+#define SPEED_DHI 0
+#define SPEED_DHD 0
 
-//Sideways PID
-#define SPEED_SP 0.7
-#define SPEED_SI 0
-#define SPEED_SD 0.03
+//Defend Vertical PID
+#define SPEED_DVP 1.5
+#define SPEED_DVI 0
+#define SPEED_DVD 0
+#define DEFEND_MAX_SPEED 50
 
-//Forwards Backwards (YUP) PID
-#define SPEED_FP 0.5
-#define SPEED_FI 0
-#define SPEED_FD 0
-#define SPEED_MAX_SPEED 20
-
-#define ROBOT 2
+#define ROBOT 1
 
 //Camera
 #define cameraSerial Serial7
@@ -85,7 +81,7 @@ struct Vector3D {
 #define CAM_NO_DATA 250
 
 //CAMERA STRENGTH
-#define CLOSE_BALL 60
+#define CLOSE_BALL 15
 
 struct MoveData{
 	double angle, correction, line, straight;
@@ -97,8 +93,9 @@ struct MoveData{
 //LRFs
 #define LRF_MUX_ENABLE 0
 
-#define MAX_DEFENCE 40
-#define CENTER_Y 56
+#define MAX_DEFENCE 35
+#define CENTER_Y 75
 #define TARGET_DISTANCE 11
+#define ATTACK_GOAL_YELLOW 1
 
 #endif

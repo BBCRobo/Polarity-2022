@@ -1,7 +1,10 @@
 #include <Motors.h>
 
+
 Motors::Motors(){};
 
+
+/*! @brief Initialises each motor.*/
 void Motors::init() {
     motorA.init(INONE_FR, INTWO_FR, PWM_FR);
     motorB.init(INONE_FL, INTWO_FL, PWM_FL);
@@ -9,6 +12,8 @@ void Motors::init() {
     motorD.init(INONE_BL, INTWO_BL, PWM_BL);
 }
 
+
+/*! @brief Sets the speed for each motor to move the robot in a certain direction at a certain speed.*/
 void Motors::moveMotors(double angle, double rotation, int speed) {
     
     double motorSpeeds[motorno] = {rotation, rotation, rotation, rotation};

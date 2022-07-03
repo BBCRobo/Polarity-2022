@@ -1,10 +1,12 @@
 #include <MotorController.h>
 #include <Common.h>
 
+
 MotorController::MotorController(){};
 
+
+/*! @brief Initialises the motor controllers pins.*/
 void MotorController::init(int pin1, int pin2, int pwmpin) {
-    //Setup the pins for the motor controller
     INPIN1 = pin1;
     INPIN2 = pin2;
     PWMPIN = pwmpin;
@@ -13,6 +15,8 @@ void MotorController::init(int pin1, int pin2, int pwmpin) {
     pinMode(PWMPIN, OUTPUT);
 }
 
+
+/*! @brief Writes values to the pins depending on the speed and direction of each motor.*/
 void MotorController::moveMotor(int speed) {
     if(speed > 0) {
         //Forward Speed

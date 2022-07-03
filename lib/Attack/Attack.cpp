@@ -1,5 +1,7 @@
 #include <Attack.h>
 
+
+/*! @brief To Update for PIDs */
 double Attack::orbit(double straight, double balldist) {
     int returning = 0;
     if(straight > 10 && straight < 350) {
@@ -17,6 +19,8 @@ double Attack::orbit(double straight, double balldist) {
     return returning;
 }
 
+
+/*! @brief The angle function runs the logic for the attacker. It will return the angle that the robot will move in. */
 double Attack::angle(bool aalive, bool balive, bool dalive, double attackdistance, double defendangle, double balldist, double straight) {
     if(balive) {
         return orbit(straight, balldist);

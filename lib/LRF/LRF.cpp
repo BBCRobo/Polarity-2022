@@ -2,9 +2,12 @@
 #include <VL53L1X.h>
 #include <QWIICMUX.h>
 
+
 QWIICMUX LRFMUX;
 VL53L1X sensor;
 
+
+/*! @brief Needs Updating*/
 void Lrf::init() {
     pinMode(LRF_MUX_ENABLE, OUTPUT);
     digitalWrite(LRF_MUX_ENABLE, HIGH);
@@ -20,6 +23,8 @@ void Lrf::init() {
     }
 }
 
+
+/*! @brief Needs Updating*/
 double Lrf::read(int lrf) {
     LRFMux.setPort(lrf);
     return sensor.readRangeContinuousMillimeters();
