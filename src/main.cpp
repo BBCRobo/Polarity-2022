@@ -21,8 +21,6 @@ LightSensor4 lsc;
 Camera eyes;
 MoveData move;
 PID headingPID(HEADING_KP, HEADING_KI, HEADING_KD, HEADING_MAX_CORRECTION);
-PID attackhorizontalPID(SPEED_AHP, SPEED_AHI, SPEED_AHD, ATTACK_MAX_SPEED);
-PID attackverticalPID(SPEED_AVP, SPEED_AVI, SPEED_AVD, ATTACK_MAX_SPEED);
 bno::Adafruit_BNO055 compass;
 sensors_event_t gyro;
 Attack attack;
@@ -111,20 +109,22 @@ void loop() {
         } else {
             move.correction = headingPID.update(gyro.orientation.x > 180 ? gyro.orientation.x - 360 : gyro.orientation.x, 0);
         }
-        float horizontal_move = -attackhorizontalPID.update(sin(M_PI*eyes.straight/180)*eyes.balldist, abs(eyes.straight > 180 ? eyes.straight - 360 : eyes.straight) > 90 ? (eyes.straight > 180 ? (eyes.straight - 360)/10 : (eyes.straight)/10) : 0);
-        float vertical_move = -attackverticalPID.update(cos(M_PI*eyes.straight/180)*eyes.balldist, 10);//abs(eyes.straight > 180 ? eyes.straight - 360 : eyes.straight) > 90 ? 0 : 10);
-        move.angle = radiansToDegrees(atan2(horizontal_move, vertical_move));
-        if(move.angle < 0) {
-            move.angle += 360;
-        }
-        move.power = sqrt(vertical_move*vertical_move + horizontal_move*horizontal_move);
-        // move.angle = attack.angle(eyes.aalive, eyes.balive, eyes.dalive, eyes.attackdistance, eyes.defendangle, eyes.balldist, move.straight);
-        // move.power = pow(euler, 0.05*eyes.balldist)+15;
-        if(abs(move.straight > 180 ? move.straight - 360 : move.straight) < 20 && eyes.balive) {
-            move.angle = 0;
-            move.power = 30;
-        }
-        if(eyes.balive != true) {move.angle = -1;}
+        move.angle = attack.angle(eyes.balive, eyes.balldist, eyes.straight);
+        move.power = attack.power(eyes.straight, eyes.balldist);
+        // float horizontal_move = -attackhorizontalPID.update(sin(M_PI*eyes.straight/180)*eyes.balldist, abs(eyes.straight > 180 ? eyes.straight - 360 : eyes.straight) > 90 ? (eyes.straight > 180 ? (eyes.straight - 360)/10 : (eyes.straight)/10) : 0);
+        // float vertical_move = -attackverticalPID.update(cos(M_PI*eyes.straight/180)*eyes.balldist, 10);//abs(eyes.straight > 180 ? eyes.straight - 360 : eyes.straight) > 90 ? 0 : 10);
+        // move.angle = radiansToDegrees(atan2(horizontal_move, vertical_move));
+        // if(move.angle < 0) {
+        //     move.angle += 360;
+        // }
+        // move.power = sqrt(vertical_move*vertical_move + horizontal_move*horizontal_move);
+        // // move.angle = attack.angle(eyes.aalive, eyes.balive, eyes.dalive, eyes.attackdistance, eyes.defendangle, eyes.balldist, move.straight);
+        // // move.power = pow(euler, 0.05*eyes.balldist)+15;
+        // if(abs(move.straight > 180 ? move.straight - 360 : move.straight) < 20 && eyes.balive) {
+        //     move.angle = 0;
+        //     move.power = 30;
+        // }
+        // if(eyes.balive != true) {move.angle = -1;}
     } else if(DEFENDER) {
         if(eyes.dalive) {
             move.correction = headingPID.update(gyro.orientation.x + 180, gyro.orientation.x + eyes.defendangle);

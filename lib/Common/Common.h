@@ -69,8 +69,6 @@ struct Vector3D {
 #define SPEED_DVD 0
 #define DEFEND_MAX_SPEED 50
 
-#define ROBOT 1
-
 //Camera
 #define cameraSerial Serial7
 #define CAM_BAUD 115200
@@ -102,6 +100,6 @@ struct MoveData{
 #define FindLS false
 #define ATTACKER false
 #define DEFENDER true
-
+#define ROBOT 1
 
 #endif

@@ -1,29 +1,42 @@
 #include <Attack.h>
 
 
-/*! @brief To Update for PIDs */
+PID attackhorizontalPID(SPEED_AHP, SPEED_AHI, SPEED_AHD, ATTACK_MAX_SPEED);
+PID attackverticalPID(SPEED_AVP, SPEED_AVI, SPEED_AVD, ATTACK_MAX_SPEED);
+
+
+/*! @brief Calculates the angle the robot should move in based on 2 PIDs (which give values based on the ball position). */
 double Attack::orbit(double straight, double balldist) {
-    int returning = 0;
-    if(straight > 10 && straight < 350) {
-        if(straight >= 180) {
-            // returning = straight - pow(euler, 0.02*(225-balldist));
-            returning = straight - pow(euler, 0.1*(60-balldist))-5;
-        } else {
-            // returning = straight + pow(euler, 0.02*(225-balldist));
-            returning = straight + pow(euler, 0.1*(60-balldist))+5;
-        }
+    if(abs(straight > 180 ? straight - 360 : straight) < 20) {
+        return 0;
     }
-    if(returning > straight + 90) {
-        returning = straight + 90;
+    float horizontal_move = -attackhorizontalPID.update(sin(M_PI*straight/180)*balldist, abs(straight > 180 ? straight - 360 : straight) > 90 ? (straight > 180 ? (straight - 360)/10 : (straight)/10) : 0);
+    float vertical_move = -attackverticalPID.update(cos(M_PI*straight/180)*balldist, 10);//abs(eyes.straight > 180 ? eyes.straight - 360 : eyes.straight) > 90 ? 0 : 10);
+    double returning = radiansToDegrees(atan2(horizontal_move, vertical_move));
+    if(returning < 0) {
+        returning += 360;
     }
     return returning;
 }
 
 
+/*! @brief The power function determines the speed of the robot based on the 2 movement PIDs. */
+double Attack::power(double straight, double balldist) {
+    if(abs(straight > 180 ? straight - 360 : straight) < 20) {
+        return 30;
+    }
+    float horizontal_move = -attackhorizontalPID.update(sin(M_PI*straight/180)*balldist, abs(straight > 180 ? straight - 360 : straight) > 90 ? (straight > 180 ? (straight - 360)/10 : (straight)/10) : 0);
+    float vertical_move = -attackverticalPID.update(cos(M_PI*straight/180)*balldist, 10);//abs(eyes.straight > 180 ? eyes.straight - 360 : eyes.straight) > 90 ? 0 : 10);
+    return sqrt(vertical_move*vertical_move + horizontal_move*horizontal_move);
+}
+
+
 /*! @brief The angle function runs the logic for the attacker. It will return the angle that the robot will move in. */
-double Attack::angle(bool aalive, bool balive, bool dalive, double attackdistance, double defendangle, double balldist, double straight) {
+double Attack::angle(bool balive, double balldist, double straight) {
     if(balive) {
         return orbit(straight, balldist);
+    } else {
+        return -1;
     }
     // if(aalive) {
     //     if(dalive) {

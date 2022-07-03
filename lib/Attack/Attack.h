@@ -11,7 +11,8 @@ class Attack {
 public:
     Attack() {};
     double orbit(double straight, double balldist);
-    double angle(bool aalive, bool balive, bool dalive, double attackdistance, double defendangle, double balldist, double straight);
+    double power(double straight, double balldist);
+    double angle(bool balive, double balldist, double straight);
 private:
     double goalangle;
 };
