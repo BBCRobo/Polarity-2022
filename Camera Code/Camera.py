@@ -6,8 +6,9 @@ import sensor, image, time, math
 import pyb
 from pyb import UART, LED
 
-thresholds = [(70, 100, 11, 127, 23, 127), (41, 100, -7, 127, -128, -40)]
-orangethreshold = [(0, 100, 35, 127, 17, 127)]
+#thresholds = [(63, 100, -2, 19, 32, 127), (45, 100, -6, 127, -128, -29)]
+thresholds = [(65, 84, -8, 7, 27, 127), (45, 100, -6, 127, -128, -29)]
+orangethreshold = [(0, 100, 26, 127, 35, 127)]
 
 attackisyellow = True
 isdebug = True
@@ -17,7 +18,7 @@ sensor.set_pixformat(sensor.RGB565) # Set pixel format to RGB565 (or GRAYSCALE)
 sensor.set_framesize(sensor.QVGA)   # Set frame size to QVGA (320x240)
 sensor.skip_frames(time = 2000)
 sensor.set_auto_gain(False)
-sensor.set_auto_whitebal(False, (-4.76043, -6.02073, -3.86825))
+sensor.set_auto_whitebal(False, (-4.76043, -6.297, -3.76291))
 sensor.set_brightness(1)
 sensor.set_contrast(0)
 sensor.set_saturation(2)
@@ -107,6 +108,8 @@ def goalcorners(blobs, centre):
     return [250, 0]
 
 while(True):
+    #while(1):
+    #    print(sensor.get_rgb_gain_db())
     clock.tick()  # Update the FPS clock.
     img = sensor.snapshot()         # Take a picture and return the image.
     goalBlobs = img.find_blobs(thresholds, x_stride=5, y_stride=5, area_threshold=50, pixel_threshold=50, merge=False, margin=23)

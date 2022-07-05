@@ -1,7 +1,8 @@
 #pragma once
 
 #include <Arduino.h>
-#include <i2c_t3.h>
+// #include <i2c_t3.h>
+#include <Wire.h>
 
 class VL53L1X
 {
@@ -1272,8 +1273,9 @@ class VL53L1X
 
     VL53L1X();
 
-    void setBus(i2c_t3 * bus) { this->bus = bus; }
-    i2c_t3 * getBus() { return bus; }
+    // void setBus(i2c_t3 * bus) { this->bus = bus; }
+    // i2c_t3 * getBus() { return bus; }
+    void setBus(TwoWire *bus) { this->bus = bus; };
 
     void setAddress(uint8_t new_addr);
     uint8_t getAddress() { return address; }
@@ -1354,7 +1356,7 @@ class VL53L1X
     // I2C buses)
     ResultBuffer results;
 
-    i2c_t3 * bus;
+    TwoWire * bus = &Wire;
 
     uint8_t address;
 

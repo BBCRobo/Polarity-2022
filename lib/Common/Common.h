@@ -48,26 +48,27 @@ struct Vector3D {
 #define HEADING_MAX_CORRECTION 100
 
 //Attack Horizontal PID
-#define SPEED_AHP 2
+#define SPEED_AHP 1.5
 #define SPEED_AHI 0
-#define SPEED_AHD 0.15
+#define SPEED_AHD 0.5
 
 //Attack Vertical PID
 #define SPEED_AVP 1
 #define SPEED_AVI 0
-#define SPEED_AVD 0.03
+#define SPEED_AVD 0.05
 #define ATTACK_MAX_SPEED 20
 
 //Defend Horizontal PID
-#define SPEED_DHP 2
+#define SPEED_DHP 0.4
 #define SPEED_DHI 0
-#define SPEED_DHD 0
+#define SPEED_DHD 0.05
+#define DEFEND_H_MAX_SPEED 30
 
 //Defend Vertical PID
 #define SPEED_DVP 1.5
 #define SPEED_DVI 0
-#define SPEED_DVD 0
-#define DEFEND_MAX_SPEED 50
+#define SPEED_DVD 0.9
+#define DEFEND_V_MAX_SPEED 50
 
 //Camera
 #define cameraSerial Serial7
@@ -81,11 +82,18 @@ struct Vector3D {
 //CAMERA STRENGTH
 #define CLOSE_BALL 15
 
+//Bluetooth
+#define toothSerial Serial1
+#define TOOTH_BAUD 115200
+#define TOOTH_PACKET_SIZE 6
+#define TOOTH_START_BITE 254
+#define TOOTH_NO_DATA 255
+
 struct MoveData{
 	double angle, correction, line, straight;
 	int power;
-	bool surge;
-	int nosee;
+	bool attacker;
+	bool defender;
 };
 
 //LRFs
@@ -98,8 +106,8 @@ struct MoveData{
 // Editable
 #define ATTACK_GOAL_YELLOW true
 #define FindLS false
-#define ATTACKER false
-#define DEFENDER true
+#define ATTACKER true
+#define DEFENDER false
 #define ROBOT 1
 
 #endif

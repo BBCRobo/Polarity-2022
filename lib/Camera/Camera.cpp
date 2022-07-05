@@ -4,9 +4,6 @@
 /*! @brief Initialises the camera. */
 void Camera::init() {
     cameraSerial.begin(CAM_BAUD);
-    count = 0;
-    achange = 0;
-    totalvariance = 0;
 }
 
 
