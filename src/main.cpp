@@ -1,4 +1,5 @@
-//Actual Github
+// Horton 2022
+// Actual Github
 #include <MotorController.h>
 #include <Arduino.h>
 #include <EEPROM.h>
