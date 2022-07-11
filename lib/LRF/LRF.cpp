@@ -1,63 +1,65 @@
 #include <Lrf.h>
+#include <Wire.h>
 #include <VL53L1X.h>
 
 
-VL53L1X sensor;
+const int sensorCount = 4;
+VL53L1X sensors[sensorCount];
 
 
-/*! @brief Needs Updating*/
-// void LRF::init() {
-//     pinMode(LRF_MUX_ENABLE, OUTPUT);
-//     digitalWrite(LRF_MUX_ENABLE, HIGH);
-//     LRFMux.begin(MUX_ADDR, LRF_MUX);
-//     for(int i = 0; i < 4; i++) {
-//         LRFMux.setPort(i);
-//         sensor.init();
-//         delay(20);
-//         sensor.setTimeout(250);
-//         sensor.setDistanceMode(VL53L1X::DistanceMode::Short);
-//         sensor.startContinuous(33);
-//         delay(20);
-//     }
-// }
+/*! @brief Initialises each laser range finder. Based off sample code.*/
+void LRF::init() {
+    toothSerial.begin(115200);
+    Wire.begin();
+    Wire.setClock(400000); // use 400 kHz I2C
+
+    // Disable/reset all sensors by driving their XSHUT pins low.
+    for (int i = 0; i < sensorCount; i++) {
+        pinMode(lrf_pins[i], OUTPUT);
+        digitalWrite(lrf_pins[i], LOW);
+    }
+
+    // Enable, initialize, and start each sensor, one by one.
+    for (int i = 1; i < sensorCount; i++) {
+        // Stop driving this sensor's XSHUT low. This should allow the carrier
+        // board to pull it high. (We do NOT want to drive XSHUT high since it is
+        // not level shifted.) Then wait a bit for the sensor to start up.
+        pinMode(lrf_pins[i], INPUT);
+        delay(10);
+
+        sensors[i].setTimeout(500);
+        if (!sensors[i].init())
+        {
+            lrf_init[i] = false;
+            // Serial.print("Failed to detect and initialize sensor ");
+            // Serial.println(i);
+        }
+
+        // Each sensor must have its address changed to a unique value other than
+        // the default of 0x29 (except for the last one, which could be left at
+        // the default). To make it simple, we'll just count up from 0x2A.
+        sensors[i].setAddress(0x2A + i);
+
+        sensors[i].startContinuous(50);
+    }
+}
 
 
-void LRF::enable(int lrf_no) {
+/*! @brief Reads a single LRF.*/
+void LRF::read_one(int lrf_no) {
+    lrf_values[lrf_no] = sensors[lrf_no].read();
+}
+
+
+/*! @brief Loops through and reads every LRF.*/
+void LRF::read_all() {
+    lrf_values[0] = 0;
+    lrf_values[1] = 0;
+    lrf_values[2] = 0;
+    lrf_values[3] = 0;
     for(int i = 0; i < 4; i++) {
-        if(i == lrf_no) {
-            digitalWrite(lrf_pins[i], HIGH);
-        } else {
-            digitalWrite(lrf_pins[i], LOW);
+        if(lrf_init[i]) {
+            read_one(i);
         }
     }
-}
-
-
-void LRF::init() {
-    pinMode(LRF_1, OUTPUT);
-    pinMode(LRF_2, OUTPUT);
-    pinMode(LRF_3, OUTPUT);
-    pinMode(LRF_4, OUTPUT);
-    for(int i = 0; i < 4; i++) {
-        enable(i);
-        sensor.init();
-        delay(20);
-        sensor.setTimeout(250);
-        sensor.setDistanceMode(VL53L1X::DistanceMode::Medium);
-        sensor.startContinuous(33);
-        delay(20);
-    }
-}
-
-
-// /*! @brief Needs Updating*/
-// double LRF::read(int lrf) {
-//     LRFMux.setPort(lrf);
-//     return sensor.readRangeContinuousMillimeters();
-// }
-
-
-double LRF::read(int lrf_no) {
-    enable(lrf_no);
-    return sensor.readRangeContinuousMillimeters();
 }

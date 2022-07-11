@@ -7,7 +7,7 @@ PID attackverticalPID(SPEED_AVP, SPEED_AVI, SPEED_AVD, ATTACK_MAX_SPEED);
 
 /*! @brief Calculates the angle the robot should move in based on 2 PIDs (which give values based on the ball position). */
 double Attack::orbit(double straight, double balldist) {
-    if(abs(straight > 180 ? straight - 360 : straight) < 10 && balldist < CLOSE_BALL + 5) {
+    if(abs(straight > 180 ? straight - 360 : straight) < 15 && balldist < 25) {
         return 0;
     }
     float horizontal_move = -attackhorizontalPID.update(sin(M_PI*straight/180)*balldist, abs(straight > 180 ? straight - 360 : straight) > 90 ? (straight > 180 ? (straight - 360)/10 : (straight)/10) : 0);
@@ -22,7 +22,7 @@ double Attack::orbit(double straight, double balldist) {
 
 /*! @brief The power function determines the speed of the robot based on the 2 movement PIDs. */
 double Attack::power(double straight, double balldist) {
-    if(abs(straight > 180 ? straight - 360 : straight) < 10 && balldist < CLOSE_BALL + 5) {
+    if(abs(straight > 180 ? straight - 360 : straight) < 15 && balldist < 25) {
         return 30;
     }
     float horizontal_move = -attackhorizontalPID.update(sin(M_PI*straight/180)*balldist, abs(straight > 180 ? straight - 360 : straight) > 90 ? (straight > 180 ? (straight - 360)/10 : (straight)/10) : 0);

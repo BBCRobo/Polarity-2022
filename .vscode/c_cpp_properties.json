@@ -27,6 +27,7 @@
                 "C:/Users/19540/.platformio/packages/framework-arduinoteensy/libraries/Wire/utility",
                 "c:/Users/19540/OneDrive - Brisbane Boys' College/Robotics/2022/Polarity 2022/Polarity-2022/lib/Adafruit_Sensor",
                 "C:/Users/19540/.platformio/packages/framework-arduinoteensy/cores/teensy4",
+                "c:/Users/19540/OneDrive - Brisbane Boys' College/Robotics/2022/Polarity 2022/Polarity-2022/lib/Position",
                 "C:/Users/19540/.platformio/packages/framework-arduinoteensy/libraries/ADC",
                 "C:/Users/19540/.platformio/packages/framework-arduinoteensy/libraries/AccelStepper/src",
                 "C:/Users/19540/.platformio/packages/framework-arduinoteensy/libraries/Adafruit_NeoPixel",
@@ -147,6 +148,7 @@
                     "C:/Users/19540/.platformio/packages/framework-arduinoteensy/libraries/Wire/utility",
                     "c:/Users/19540/OneDrive - Brisbane Boys' College/Robotics/2022/Polarity 2022/Polarity-2022/lib/Adafruit_Sensor",
                     "C:/Users/19540/.platformio/packages/framework-arduinoteensy/cores/teensy4",
+                    "c:/Users/19540/OneDrive - Brisbane Boys' College/Robotics/2022/Polarity 2022/Polarity-2022/lib/Position",
                     "C:/Users/19540/.platformio/packages/framework-arduinoteensy/libraries/ADC",
                     "C:/Users/19540/.platformio/packages/framework-arduinoteensy/libraries/AccelStepper/src",
                     "C:/Users/19540/.platformio/packages/framework-arduinoteensy/libraries/Adafruit_NeoPixel",
@@ -247,7 +249,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=60002",
+                "PLATFORMIO=60100",
                 "__IMXRT1062__",
                 "ARDUINO_TEENSY40",
                 "USB_SERIAL",

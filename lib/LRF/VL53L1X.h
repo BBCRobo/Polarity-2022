@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Arduino.h>
-// #include <i2c_t3.h>
 #include <Wire.h>
 
 class VL53L1X
@@ -1273,9 +1272,8 @@ class VL53L1X
 
     VL53L1X();
 
-    // void setBus(i2c_t3 * bus) { this->bus = bus; }
-    // i2c_t3 * getBus() { return bus; }
-    void setBus(TwoWire *bus) { this->bus = bus; };
+    void setBus(TwoWire * bus) { this->bus = bus; }
+    TwoWire * getBus() { return bus; }
 
     void setAddress(uint8_t new_addr);
     uint8_t getAddress() { return address; }
@@ -1295,6 +1293,11 @@ class VL53L1X
     bool setMeasurementTimingBudget(uint32_t budget_us);
     uint32_t getMeasurementTimingBudget();
 
+    void setROISize(uint8_t width, uint8_t height);
+    void getROISize(uint8_t * width, uint8_t * height);
+    void setROICenter(uint8_t spadNum);
+    uint8_t getROICenter();
+
     void startContinuous(uint32_t period_ms);
     void stopContinuous();
     uint16_t read(bool blocking = true);
@@ -1311,7 +1314,6 @@ class VL53L1X
     void setTimeout(uint16_t timeout) { io_timeout = timeout; }
     uint16_t getTimeout() { return io_timeout; }
     bool timeoutOccurred();
-    uint8_t status1() {return results.range_status;}
 
   private:
 
@@ -1339,7 +1341,7 @@ class VL53L1X
     // (0x0099)
     struct ResultBuffer
     {
-      uint8_t range_status = 1;
+      uint8_t range_status;
     // uint8_t report_status: not used
       uint8_t stream_count;
       uint16_t dss_actual_effective_spads_sd0;
@@ -1356,7 +1358,7 @@ class VL53L1X
     // I2C buses)
     ResultBuffer results;
 
-    TwoWire * bus = &Wire;
+    TwoWire * bus;
 
     uint8_t address;
 
