@@ -48,9 +48,9 @@ struct Vector3D {
 #define HEADING_MAX_CORRECTION 100
 
 //BNO PID - Robot 2
-#define HEADING_KP2 0.2
+#define HEADING_KP2 0.5
 #define HEADING_KI2 0
-#define HEADING_KD2 0
+#define HEADING_KD2 0.06
 
 //Attack Horizontal PID
 #define SPEED_AHP 1.5

@@ -12,5 +12,8 @@ public:
     void fire();
     bool check_LDR();
     int LDR_high = -1;
+private:
+    bool kicking = false;
+    unsigned long last_kick;
 };
 #endif

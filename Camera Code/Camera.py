@@ -6,9 +6,12 @@ import sensor, image, time, math
 import pyb
 from pyb import UART, LED
 
-thresholds = [(0, 100, 17, 30, 40, 127), (0, 37, -128, 127, -128, -41)]
-#orangethreshold = [(56, 74, 29, 127, 32, 127)]
-orangethreshold = [(0, 100, 26, 127, 21, 127)]
+#Old Camera
+thresholds = [(38, 68, 7, 31, 5, 127), (27, 40, -128, 34, -128, -27)]
+orangethreshold = [(0, 100, 42, 127, 11, 127)]
+#Other Camera
+thresholds = [(0, 47, -14, 127, 11, 127), (27, 40, -128, 34, -128, -27)]
+orangethreshold = [(0, 100, 42, 127, 11, 127)]
 
 attackisyellow = True
 isdebug = True
@@ -18,10 +21,10 @@ sensor.set_pixformat(sensor.RGB565) # Set pixel format to RGB565 (or GRAYSCALE)
 sensor.set_framesize(sensor.QVGA)   # Set frame size to QVGA (320x240)
 sensor.skip_frames(time = 2000)
 sensor.set_auto_gain(False)
-sensor.set_auto_whitebal(False, (-6.02073, -6.02073, -1.97256))
-sensor.set_brightness(1)
-sensor.set_contrast(0)
-sensor.set_saturation(2)
+sensor.set_auto_whitebal(False, (-2.05809, -6.02073, -3.35391))
+sensor.set_brightness(0)
+sensor.set_contrast(3)
+sensor.set_saturation(3)
 sensor.set_windowing((50, 0, 240, 240)) # Wait for settings take effect.
 clock = time.clock()                # Create a clock object to track the FPS.
 uart = UART(3, 115200, timeout_char = 10)

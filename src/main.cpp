@@ -16,6 +16,7 @@
 #include <Defend.h>
 #include <Bluetooth.h>
 #include <Position.h>
+#include <Kicker.h>
 #include <math.h>
 
 
@@ -24,6 +25,7 @@ LightSensor4 lsc;
 Camera eyes;
 Position position;
 Bluetooth teeth;
+Kicker kick;
 MoveData move;
 PID headingPID1(HEADING_KP1, HEADING_KI1, HEADING_KD1, HEADING_MAX_CORRECTION);
 PID headingPID2(HEADING_KP2, HEADING_KI2, HEADING_KD2, HEADING_MAX_CORRECTION);
@@ -42,6 +44,7 @@ void setup() {
     eyes.init();
     position.init();
     teeth.init();
+    kick.init();
     //BNO Init
     while (!compass.begin()) {
         Serial.println("Seems that the BNO is dead....");
@@ -74,7 +77,6 @@ void setup() {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(1000);
     digitalWrite(LED_BUILTIN, LOW);
-    // digitalWrite(KICKER_PIN, LOW);
     move.attacker = ATTACKER;
     move.defender = DEFENDER;
     loop_count = 0;
@@ -161,27 +163,30 @@ void loop() {
 
     if (move.attacker){
         //This section of the code was originally a separate function until the goal tracking PID got removed. It keeps the robot facing the correct direction.
-        // if(eyes.aalive && (abs(eyes.attackangle - 0) < 40 || abs(eyes.attackangle - 360) < 40) && eyes.balldist < 20) {
-        //     if(eyes.attackangle < 180) {
-        //         if(ROBOT == 1) {
-        //             move.correction = headingPID1.update(gyro.orientation.x, gyro.orientation.x + eyes.attackangle);
-        //         } else {
-        //             move.correction = headingPID2.update(gyro.orientation.x, gyro.orientation.x + eyes.attackangle);
-        //         }
-        //     } else {
-        //         if(ROBOT == 1) {
-        //             move.correction = headingPID1.update(gyro.orientation.x, gyro.orientation.x - 360 + eyes.attackangle);
-        //         } else {
-        //             move.correction = headingPID2.update(gyro.orientation.x, gyro.orientation.x - 360 + eyes.attackangle);
-        //         }
-        //     }
-        // } else {
-        if(ROBOT == 1) {
-            move.correction = headingPID1.update(gyro.orientation.x > 180 ? gyro.orientation.x - 360 : gyro.orientation.x, 0);
+        if(eyes.aalive && abs(eyes.attackdistance) < 40 && eyes.balldist < 20) {
+            if(eyes.attackangle < 30 || eyes.attackangle > 330) {
+                kick.fire();
+            }
+            if(eyes.attackangle < 180) {
+                if(ROBOT == 1) {
+                    move.correction = headingPID1.update(gyro.orientation.x, gyro.orientation.x + eyes.attackangle);
+                } else {
+                    move.correction = headingPID2.update(gyro.orientation.x, gyro.orientation.x + eyes.attackangle);
+                }
+            } else {
+                if(ROBOT == 1) {
+                    move.correction = headingPID1.update(gyro.orientation.x, gyro.orientation.x - 360 + eyes.attackangle);
+                } else {
+                    move.correction = headingPID2.update(gyro.orientation.x, gyro.orientation.x - 360 + eyes.attackangle);
+                }
+            }
         } else {
-            move.correction = headingPID2.update(gyro.orientation.x > 180 ? gyro.orientation.x - 360 : gyro.orientation.x, 0);
+            if(ROBOT == 1) {
+                move.correction = headingPID1.update(gyro.orientation.x > 180 ? gyro.orientation.x - 360 : gyro.orientation.x, 0);
+            } else {
+                move.correction = headingPID2.update(gyro.orientation.x > 180 ? gyro.orientation.x - 360 : gyro.orientation.x, 0);
+            }
         }
-        // }
         move.angle = attack.angle(eyes.balive, eyes.balldist, eyes.straight);
         move.power = attack.power(eyes.straight, eyes.balldist);
     } else if(move.defender) {
@@ -204,7 +209,12 @@ void loop() {
     }
     move.line = lsc.DirectionOfLine(gyro.orientation.x, position);
     move.line = -11.25;
-    move.angle = -1;
+    // move.angle = -1;
+    Serial.print(eyes.straight);
+    Serial.print(" ");
+    Serial.print(eyes.balldist);
+    Serial.print(" ");
+    Serial.println(move.power);
     if(move.line != -11.25) {
         move.angle = move.line;
         move.power = 20;

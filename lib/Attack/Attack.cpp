@@ -23,7 +23,7 @@ double Attack::orbit(double straight, double balldist) {
 /*! @brief The power function determines the speed of the robot based on the 2 movement PIDs. */
 double Attack::power(double straight, double balldist) {
     if(abs(straight > 180 ? straight - 360 : straight) < 15 && balldist < 25) {
-        return 30;
+        return 40;
     }
     float horizontal_move = -attackhorizontalPID.update(sin(M_PI*straight/180)*balldist, abs(straight > 180 ? straight - 360 : straight) > 90 ? (straight > 180 ? (straight - 360)/10 : (straight)/10) : 0);
     float vertical_move = -attackverticalPID.update(cos(M_PI*straight/180)*balldist, 15);//abs(eyes.straight > 180 ? eyes.straight - 360 : eyes.straight) > 90 ? 0 : 10);

@@ -8,17 +8,22 @@ void Kicker::init() {
         LDR_high += analogRead(LDR_PIN);
     }
     LDR_high /= 10;
-    LDR_high -= 50;    
+    LDR_high -= 50;
+    last_kick = micros();
     digitalWrite(KICKER_PIN, LOW);
 }
 
 
 void Kicker::fire() {
-    if(check_LDR()) {
-        digitalWrite(KICKER_PIN, HIGH);
-        delay(35);
+    unsigned long current_time = micros();
+    if(kicking && current_time - last_kick > 35000) {
+        kicking = false;
         digitalWrite(KICKER_PIN, LOW);
-        delay(500);
+        last_kick = micros();
+    }
+    if(check_LDR() && !kicking && current_time - last_kick > 500000) {
+        digitalWrite(KICKER_PIN, HIGH);
+        kicking = true;
     }
 }
 
