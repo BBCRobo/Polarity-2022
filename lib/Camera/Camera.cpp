@@ -17,8 +17,14 @@ void Camera::read() {
             aalive = camBuffer[0] != CAM_NO_DATA;
             dalive = camBuffer[2] != CAM_NO_DATA;
             balive = camBuffer[4] != CAM_NO_DATA;
+            // Serial.print(camBuffer[0]);
+            // Serial.print(" ");
+            // Serial.print(camBuffer[1]);
+            // Serial.print(" ");
             attackangle = aalive ? calcangle(camBuffer[0], camBuffer[1]) : -1;
             attackdistance = aalive ? calcdistance(camBuffer[0], camBuffer[1]) : -1;
+            // Serial.print(attackdistance);
+            // Serial.print(" ");
             defendangle = dalive ? calcangle(camBuffer[2], camBuffer[3]) : -1;
             defenddistance = dalive ? calcdistance(camBuffer[2], camBuffer[3]) : -1;
             if(ATTACK_GOAL_YELLOW) {

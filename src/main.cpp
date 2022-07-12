@@ -25,7 +25,8 @@ Camera eyes;
 Position position;
 Bluetooth teeth;
 MoveData move;
-PID headingPID(HEADING_KP, HEADING_KI, HEADING_KD, HEADING_MAX_CORRECTION);
+PID headingPID1(HEADING_KP1, HEADING_KI1, HEADING_KD1, HEADING_MAX_CORRECTION);
+PID headingPID2(HEADING_KP2, HEADING_KI2, HEADING_KD2, HEADING_MAX_CORRECTION);
 bno::Adafruit_BNO055 compass;
 sensors_event_t gyro;
 Attack attack;
@@ -40,6 +41,7 @@ void setup() {
     lsc.init();
     eyes.init();
     position.init();
+    teeth.init();
     //BNO Init
     while (!compass.begin()) {
         Serial.println("Seems that the BNO is dead....");
@@ -87,13 +89,11 @@ void loop() {
     move.straight = eyes.straight;
     position.read_lrfs();
     position.update(gyro.orientation.x, eyes.attackangle, eyes.attackdistance, eyes.defendangle, eyes.defenddistance, eyes.straight, eyes.balldist, eyes.aalive, eyes.dalive);
-    // if(eyes.dalive || eyes.aalive || eyes.balive) {
-    //     Serial.println("y");
-    //     teeth.update(0, 0, 0, 0);
-    // } else {
-    //     teeth.update(255,255,255,255);
-    // }
-    // Serial.println(teeth.other_ball_location[0]);
+    if(eyes.dalive || eyes.aalive || eyes.balive) {
+        teeth.update(53, 53, 53, 53);
+    } else {
+        teeth.update(25,25,25,25);
+    }
 
     //Position is determined by a 6x8 grid on the field.
     int position = -1;
@@ -161,29 +161,51 @@ void loop() {
     // Serial.println(position);
 
     if (move.attacker){
-        if(eyes.aalive && (abs(eyes.attackangle - 0) < 40 || abs(eyes.attackangle - 360) < 40) && eyes.balldist < 20) {
-            if(eyes.attackangle < 180) {
-                move.correction = headingPID.update(gyro.orientation.x, gyro.orientation.x + eyes.attackangle);
-            } else {
-                move.correction = headingPID.update(gyro.orientation.x, gyro.orientation.x - 360 + eyes.attackangle);
-            }
+        //This section of the code was originally a separate function until the goal tracking PID got removed. It keeps the robot facing the correct direction.
+        // if(eyes.aalive && (abs(eyes.attackangle - 0) < 40 || abs(eyes.attackangle - 360) < 40) && eyes.balldist < 20) {
+        //     if(eyes.attackangle < 180) {
+        //         if(ROBOT == 1) {
+        //             move.correction = headingPID1.update(gyro.orientation.x, gyro.orientation.x + eyes.attackangle);
+        //         } else {
+        //             move.correction = headingPID2.update(gyro.orientation.x, gyro.orientation.x + eyes.attackangle);
+        //         }
+        //     } else {
+        //         if(ROBOT == 1) {
+        //             move.correction = headingPID1.update(gyro.orientation.x, gyro.orientation.x - 360 + eyes.attackangle);
+        //         } else {
+        //             move.correction = headingPID2.update(gyro.orientation.x, gyro.orientation.x - 360 + eyes.attackangle);
+        //         }
+        //     }
+        // } else {
+        if(ROBOT == 1) {
+            move.correction = headingPID1.update(gyro.orientation.x > 180 ? gyro.orientation.x - 360 : gyro.orientation.x, 0);
         } else {
-            move.correction = headingPID.update(gyro.orientation.x > 180 ? gyro.orientation.x - 360 : gyro.orientation.x, 0);
+            move.correction = headingPID2.update(gyro.orientation.x > 180 ? gyro.orientation.x - 360 : gyro.orientation.x, 0);
         }
+        // }
         move.angle = attack.angle(eyes.balive, eyes.balldist, eyes.straight);
         move.power = attack.power(eyes.straight, eyes.balldist);
     } else if(move.defender) {
+        //This section of the code was originally a separate function until the goal tracking PID got removed. It keeps the robot facing the correct direction.
         if(eyes.dalive) {
-            move.correction = headingPID.update(gyro.orientation.x + 180, gyro.orientation.x + eyes.defendangle);
+            if(ROBOT == 1) {
+                move.correction = headingPID1.update(gyro.orientation.x + 180, gyro.orientation.x + eyes.defendangle);
+            } else {
+                move.correction = headingPID2.update(gyro.orientation.x + 180, gyro.orientation.x + eyes.defendangle);
+            }
         } else {
-            move.correction = headingPID.update(gyro.orientation.x > 180 ? gyro.orientation.x - 360 : gyro.orientation.x, 0);
+            if(ROBOT == 1) {
+                move.correction = headingPID1.update(gyro.orientation.x > 180 ? gyro.orientation.x - 360 : gyro.orientation.x, 0);
+            } else {
+                move.correction = headingPID2.update(gyro.orientation.x > 180 ? gyro.orientation.x - 360 : gyro.orientation.x, 0);
+            }
         }
         move.angle = defend.angle(move.straight, eyes.defenddistance, eyes.balldist, eyes.dalive, eyes.balive, gyro.orientation.x);
         move.power = defend.power(eyes.dalive, eyes.balive, move.straight, eyes.defenddistance, eyes.balldist, gyro.orientation.x);
     }
     move.line = lsc.DirectionOfLine(gyro.orientation.x, position);
     move.line = -11.25;
-    // move.angle = -1;
+    move.angle = -1;
     if(move.line != -11.25) {
         move.angle = move.line;
         move.power = 20;

@@ -4,16 +4,24 @@
 LRF laser;
 
 
+/*! @brief Allows the initialisation of the lrfs from the main loop. */
 void Position::init() {
     laser.init();
+    last_lrf_read = micros();
 }
 
 
+/*! @brief Allows the lrfs to be read from the main loop. */
 void Position::read_lrfs() {
-    laser.read_all();
+    unsigned long current_time = micros();
+    if(current_time - last_lrf_read < 5000) {
+        laser.read_all();
+        last_lrf_read = micros();
+    }
 }
 
 
+/*! @brief Runs the logic of the positioning system. */
 void Position::update(float orientation, double attackangle, double attackdistance, double defendangle, double defenddistance, double straight, double balldist, bool aalive, bool dalive) {
     lrf_distances(orientation);
     goal_position(orientation, attackangle, attackdistance, defendangle, defenddistance, aalive, dalive);
@@ -26,9 +34,9 @@ void Position::update(float orientation, double attackangle, double attackdistan
     } else {
         pos_x = goal_pos_x;
     }
-    if(g_position - g_position%10 < 2) {
+    if(g_position%10 < 2) {
         pos_y = f_l == -1000 ? goal_pos_y : f_l;
-    } else if(g_position - g_position%10 > 5) {
+    } else if(g_position%10 > 5) {
         pos_y = b_l == -1000 ? goal_pos_y : b_l;
     } else if(check_y()) {
         pos_y = 0.5*b_l + 0.5*f_l;
@@ -37,34 +45,37 @@ void Position::update(float orientation, double attackangle, double attackdistan
     }
     position = 10*int(pos_x/270)+int(pos_y/270);
     ball_position(orientation, straight, balldist);
-    Serial.print(orientation);
-    Serial.print(" ");
-    Serial.print(f_l);
-    Serial.print(" ");
-    Serial.print(b_l);
-    Serial.print(" ");
-    Serial.print(l_l);
-    Serial.print(" ");
-    Serial.print(r_l);
-    Serial.print(" ");
-    Serial.print(a_x);
-    Serial.print(" ");
-    Serial.print(a_y);
-    Serial.print(" ");
-    Serial.print(d_x);
-    Serial.print(" ");
-    Serial.print(d_y);
-    Serial.print(" ");
-    Serial.print(pos_x);
-    Serial.print(" ");
-    Serial.print(pos_y);
-    Serial.print(" ");
-    Serial.print(g_position);
-    Serial.print(" ");
-    Serial.println(position);
+    // Serial.print(orientation);
+    // Serial.print(" lrfs: ");
+    // Serial.print(f_l);
+    // Serial.print(" ");
+    // Serial.print(b_l);
+    // Serial.print(" ");
+    // Serial.print(l_l);
+    // Serial.print(" ");
+    // Serial.print(r_l);
+    // Serial.print(" goals: ");
+    // Serial.print(attackdistance);
+    // Serial.print(" ");
+    // Serial.print(a_x);
+    // Serial.print(" ");
+    // Serial.print(a_y);
+    // Serial.print(" ");
+    // Serial.print(d_x);
+    // Serial.print(" ");
+    // Serial.print(d_y);
+    // Serial.print(" pos's: ");
+    // Serial.print(pos_x);
+    // Serial.print(" ");
+    // Serial.print(pos_y);
+    // Serial.print(" ");
+    // Serial.println(g_position);
+    // Serial.print(" ");
+    // Serial.println(position);
 }
 
 
+/*! @brief Converts the lrf values to x and y distances. */
 void Position::lrf_distances(float orientation) {
     if(abs(orientation - 360) < 45 || abs(orientation - 0) < 45) {
         if(laser.lrf_init[0]) {
@@ -122,6 +133,7 @@ void Position::lrf_distances(float orientation) {
 }
 
 
+/*! @brief Determines the position of the robot based on the goal. */
 void Position::goal_position(float orientation, double attackangle, double attackdistance, double defendangle, double defenddistance, bool aalive, bool dalive) {
     if(aalive) {
         a_x = 785-10*sin(floatMod(attackangle + orientation, 360)*M_PI/180)*attackdistance;
@@ -132,15 +144,22 @@ void Position::goal_position(float orientation, double attackangle, double attac
             goal_pos_x = 0.5*a_x + 0.5*d_x;
             goal_pos_y = 0.5*a_y + 0.5*d_y;
         } else {
+            d_x = 0;
+            d_y = 0;
             goal_pos_x = a_x;
             goal_pos_y = a_y;
         }
     } else {
+        a_x = 0;
+        a_y = 0;
         if(dalive) {
             d_x = 785-10*sin(floatMod(defendangle + orientation, 360)*M_PI/180)*defenddistance;
             d_y = 1780+10*cos(floatMod(defendangle + orientation, 360)*M_PI/180)*defenddistance;
             goal_pos_x = d_x;
             goal_pos_y = d_y;
+        } else {
+            d_x = 0;
+            d_y = 0;
         }
     }
     if(goal_pos_x != -1000) {
@@ -149,6 +168,7 @@ void Position::goal_position(float orientation, double attackangle, double attac
 }
 
 
+/*! @brief Determines the position of the ball based on the robot. */
 void Position::ball_position(float orientation, double straight, double balldist) {
     if(straight != -1) {
         ball_pos_x = pos_x + sin(floatMod(straight + orientation, 360)*M_PI/180)*balldist;
@@ -157,11 +177,13 @@ void Position::ball_position(float orientation, double straight, double balldist
 }
 
 
+/*! @brief Converts x/y coordinates to the 6x8 grid. */
 int Position::fit_to_grid(float x, float y) {
     return 10*int(x/270)+int(y/270);
 }
 
 
+/*! @brief Checks that the sideways lrfs have the right distances. */
 bool Position::check_x() {
     if(l_l != -1000) {
         return abs(l_l - r_l) < 400;
@@ -170,6 +192,7 @@ bool Position::check_x() {
 }
 
 
+/*! @brief Checks that the front and backwards lrfs have the right distances. */
 bool Position::check_y() {
     if(b_l != -1000) {
         return abs(b_l - f_l) < 400;

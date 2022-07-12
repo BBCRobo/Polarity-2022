@@ -38,14 +38,19 @@ struct Vector3D {
 #define ACC_FULL_SCALE_8_G 0x10
 #define ACC_FULL_SCALE_16_G 0x18
 
-//BNO PID
+//BNO PID - Robot 1
 //If the robot is not correcting fast enough, increase P.
-#define HEADING_KP 0.5
+#define HEADING_KP1 0.5
 // WARNING: DO NOT USE
-#define HEADING_KI 0
+#define HEADING_KI1 0
 //If the robot does not stop oscillating, increase D.
-#define HEADING_KD 0.06
+#define HEADING_KD1 0.06
 #define HEADING_MAX_CORRECTION 100
+
+//BNO PID - Robot 2
+#define HEADING_KP2 0.2
+#define HEADING_KI2 0
+#define HEADING_KD2 0
 
 //Attack Horizontal PID
 #define SPEED_AHP 1.5
@@ -84,7 +89,7 @@ struct Vector3D {
 
 //Bluetooth
 #define toothSerial Serial1
-#define TOOTH_BAUD 115200
+#define TOOTH_BAUD 38400
 #define TOOTH_PACKET_SIZE 6
 #define TOOTH_START_BITE 254
 #define TOOTH_NO_DATA 255
@@ -108,6 +113,6 @@ struct MoveData{
 #define FindLS false
 #define ATTACKER true
 #define DEFENDER false
-#define ROBOT 1
+#define ROBOT 2
 
 #endif

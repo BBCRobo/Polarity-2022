@@ -35,5 +35,6 @@ private:
     float goal_pos_x = -1000;
     float goal_pos_y = -1000;
     int g_position = -1;
+    unsigned long last_lrf_read;
 };
 #endif
