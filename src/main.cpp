@@ -50,14 +50,14 @@ void setup() {
     move.angle = -1;
     if(FindLS) {
         lsc.FindGreen();
-        pinMode(13, OUTPUT);
-        digitalWrite(13, HIGH);
+        pinMode(LED_BUILTIN, OUTPUT);
+        digitalWrite(LED_BUILTIN, HIGH);
         delay(1000);
-        digitalWrite(13, LOW);
+        digitalWrite(LED_BUILTIN, LOW);
         lsc.FindWhite();
-        digitalWrite(13, HIGH);
+        digitalWrite(LED_BUILTIN, HIGH);
         delay(1000);
-        digitalWrite(13, LOW);
+        digitalWrite(LED_BUILTIN, LOW);
         for(int i = 0; i < LS_COUNT; i++) {
             lsc.green[i] = lsc.lsdebug[i][0]*0.5 + lsc.lsdebug[i][1]*0.5;
             if(i == 0 && ROBOT == 2) {
@@ -70,11 +70,10 @@ void setup() {
         }
         // Serial.println(";");
     }
-    // pinMode(KICKER_PIN, OUTPUT);
-    pinMode(13, OUTPUT);
-    digitalWrite(13, HIGH);
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, HIGH);
     delay(1000);
-    digitalWrite(13, LOW);
+    digitalWrite(LED_BUILTIN, LOW);
     // digitalWrite(KICKER_PIN, LOW);
     move.attacker = ATTACKER;
     move.defender = DEFENDER;

@@ -79,3 +79,4 @@
 
 // Kicker
 #define KICKER_PIN 26
+#define LDR_PIN 15
