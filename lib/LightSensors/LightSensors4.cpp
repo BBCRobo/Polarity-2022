@@ -46,9 +46,13 @@ void LightSensor4::init() {
     pinMode(LS_BINARY_3, OUTPUT);
     pinMode(LS_OUTPUT_1, INPUT);
     pinMode(LS_OUTPUT_2, INPUT);
-    for(int i = 0; i < LS_COUNT; i++) {
+    for(int i = 0; i < LS_COUNT*2; i++) {
         // green[i] = read(lspins[i]);
-        green[i] = EEPROM.read(i)*4;
+        // green[i] = EEPROM.read(i)*4;
+        uint8_t upperByte = EEPROM.read(i);
+        i++;
+        uint8_t lowerByte = EEPROM.read(i);
+        green[i/2] = (upperByte << 8) | (lowerByte & 0xFF);
     }
     location = 0;
     prev = -11.25;
@@ -121,18 +125,42 @@ double LightSensor4::DirectionOfLine(float orientation, int position) {
     int clusters[16][2] = {{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}};
     int clusterno = -1;
     int totalno = 0;
+    direction = -11.25;
     double expected[3] = {0,0,0};
+    uint32_t reading = 0;
     for(int i = 0; i < (LS_COUNT); i++) {
         // Serial.print(read(lspins[i]));
         // Serial.print(" ");
-        if(int(read(lspins[i])/4)*4 > green[i]) {
+        // if(ROBOT == 2 && (i == 4 || i == 5 || i == 8)) {
+        //     continue;
+        // }
+        int value = read(lspins[i]);
+        if(value > green[i] + 2) {
             lsvalues[i] = 1;
             totalno += 1;
+            // reading += pow(2, 31-i);
+            reading |= (1 << (31-i));
         } else {
             lsvalues[i] = 0;
         }
     }
     // Serial.println(";");
+    if(reading == last_reading) {
+        same += 1;
+    } else {
+        same = 0;
+    }
+    if(same >= 2) {
+        last_correct_reading = reading;
+    } else {
+        totalno = 0;
+        for(int i = 0; i < LS_COUNT; i++) {
+            lsvalues[i] = (last_correct_reading >> (31-i)) & 1;
+            if(lsvalues[i] == 1) {
+                totalno += 1;
+            }
+        }
+    }
     clustering = false;
     for(int i = 0; i < LS_COUNT; i++) {
         // Serial.print(lsvalues[i]);
@@ -183,6 +211,20 @@ double LightSensor4::DirectionOfLine(float orientation, int position) {
         final_clusters[clusterno][1] = -1;
         clusterno -= 1;
     }
+    // for(int i = 0; i < 4; i++) {
+    //     if(final_clusters[i][0] == final_clusters[i][1]) {
+    //         clusterno -= 1;
+    //         totalno -= 1;
+    //         int j = 1;
+    //         while(i + j < 4) {
+    //             final_clusters[i + j - 1][0] = final_clusters[i + j][0];
+    //             final_clusters[i + j - 1][1] = final_clusters[i + j][1];
+    //             j += 1;
+    //         }
+    //         final_clusters[3][0] = -1;
+    //         final_clusters[3][1] = -1;
+    //     }
+    // }
     float cluster_centre[4] = {0.0,0.0,0.0,0.0};
     for(int i = 0; i < 4; i++) {
         float centre = (final_clusters[i][0] + (final_clusters[i][0] > final_clusters[i][1] ? final_clusters[i][1]+32 : final_clusters[i][1]))/2;
@@ -195,6 +237,7 @@ double LightSensor4::DirectionOfLine(float orientation, int position) {
         // Serial.print("}");
         // Serial.print(" ");
     }
+    // Serial.println(";");
     clusterno += 1;
     if(totalno > 0) {
         if(clusterno == 1) {
@@ -412,6 +455,12 @@ double LightSensor4::DirectionOfLine(float orientation, int position) {
             // }
         }
     }
+    // Serial.print(location);
+    // Serial.print(" ");
+    // Serial.print(lastline);
+    // Serial.print(" ");
+    // Serial.print(direction);
+    // Serial.print(" ");
     if(direction != -11.25) {
         direction -= (orientation > 180 ? orientation - 360 : orientation)*M_PI/180;
         while(direction < 0) {
@@ -425,5 +474,7 @@ double LightSensor4::DirectionOfLine(float orientation, int position) {
     // Serial.print(location);
     // Serial.print(" ");
     // Serial.println(direction);
+    // Serial.print(" ");
+    last_reading = reading;
     return direction;
 }

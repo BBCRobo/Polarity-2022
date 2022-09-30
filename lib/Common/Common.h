@@ -52,28 +52,50 @@ struct Vector3D {
 #define HEADING_KI2 0
 #define HEADING_KD2 0.06
 
-//Attack Horizontal PID
-#define SPEED_AHP 1.5
-#define SPEED_AHI 0
-#define SPEED_AHD 0.5
+//Attack Horizontal PID - Robot 1
+#define SPEED_AHP1 1.5
+#define SPEED_AHI1 0
+#define SPEED_AHD1 0.5
 
-//Attack Vertical PID
-#define SPEED_AVP 1
-#define SPEED_AVI 0
-#define SPEED_AVD 0.05
+//Attack Vertical PID - Robot 1
+#define SPEED_AVP1 1.2
+#define SPEED_AVI1 0
+#define SPEED_AVD1 0.6
 #define ATTACK_MAX_SPEED 20
 
-//Defend Horizontal PID
-#define SPEED_DHP 0.4
-#define SPEED_DHI 0
-#define SPEED_DHD 0.05
+//Defend Horizontal PID - Robot 1
+#define SPEED_DHP1 0.4
+#define SPEED_DHI1 0
+#define SPEED_DHD1 0.05
 #define DEFEND_H_MAX_SPEED 30
 
-//Defend Vertical PID
-#define SPEED_DVP 1.5
-#define SPEED_DVI 0
-#define SPEED_DVD 0.9
-#define DEFEND_V_MAX_SPEED 50
+//Defend Vertical PID - Robot 1
+#define SPEED_DVP1 1.5
+#define SPEED_DVI1 0
+#define SPEED_DVD1 0.9
+
+//Attack Horizontal PID - Robot 2
+#define SPEED_AHP2 1.5
+#define SPEED_AHI2 0
+#define SPEED_AHD2 0.5
+
+//Attack Vertical PID - Robot 2
+#define SPEED_AVP2 1.2
+#define SPEED_AVI2 0
+#define SPEED_AVD2 0.6
+#define ATTACK_MAX_SPEED 20
+
+//Defend Horizontal PID - Robot 2
+#define SPEED_DHP2 0.4
+#define SPEED_DHI2 0
+#define SPEED_DHD2 0.05
+#define DEFEND_H_MAX_SPEED 30
+
+//Defend Vertical PID - Robot 2
+#define SPEED_DVP2 1.5
+#define SPEED_DVI2 0
+#define SPEED_DVD2 1
+#define DEFEND_V_MAX_SPEED 30
 
 //Camera
 #define cameraSerial Serial7
@@ -85,7 +107,7 @@ struct Vector3D {
 #define CAM_NO_DATA 250
 
 //CAMERA STRENGTH
-#define CLOSE_BALL 15
+#define CLOSE_BALL 25
 
 //Bluetooth
 #define toothSerial Serial1
@@ -101,18 +123,14 @@ struct MoveData{
 	bool defender;
 };
 
-//LRFs
-#define LRF_MUX_ENABLE 0
-
 #define MAX_DEFENCE 35
-#define CENTER_Y 75
+#define CENTER_Y 80
 #define TARGET_DISTANCE 11
 
 // Editable
 #define ATTACK_GOAL_YELLOW true
 #define FindLS false
-#define ATTACKER true
-#define DEFENDER false
+#define ATTACKER false
+#define DEFENDER true
 #define ROBOT 2
-
 #endif

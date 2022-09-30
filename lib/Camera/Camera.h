@@ -4,12 +4,13 @@
 #include <Pins.h>
 #include <Arduino.h>
 #include <Common.h>
+#include <math.h>
 
 class Camera {
 public:
     Camera() {};
     void init();
-    void read();
+    void read(float heading);
     bool aalive;
     bool dalive;
     bool balive;
