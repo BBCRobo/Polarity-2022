@@ -80,7 +80,7 @@ void setup() {
     eyes.init();
     // defend.kick_init();
     // pos.init();
-    // teeth.init();
+    teeth.init();
     //BNO Init
     while (!compass.begin()) {
         Serial.println("Seems that the BNO is dead....");
@@ -144,28 +144,28 @@ void loop() {
     // Serial.print(" ");
     // Serial.println(pos.position);
 
-    // if(eyes.balive) {
-    //     teeth.update(int(pos.pos_x), int(pos.pos_y), int(pos.ball_pos_x), int(pos.ball_pos_y));
-    // } else {
-    //     teeth.update(int(pos.pos_x), int(pos.pos_y), 255, 0);
-    //     if(teeth.other_ball_location[0] != -1) {
-    //         eyes.straight = floatMod(atan2(teeth.other_ball_location[0], teeth.other_ball_location[1]), 360);
-    //         eyes.balldist = sqrt(pow(teeth.other_ball_location[0]-pos.pos_x,2) + pow(teeth.other_ball_location[1]-pos.pos_y,2));
-    //     }
-    // }
-    // if(teeth.connection == false) {
-    //     move.attacker = false;
-    //     move.defender = true;
-    // } else {
-    //     // Add Surging!!!
-    //     if(teeth.other_robot_location[1] != -1 && teeth.other_robot_location[1] < pos.pos_y) {
-    //         move.attacker = false;
-    //         move.defender = true;
-    //     } else if(teeth.other_robot_location[1] != -1 && teeth.other_robot_location[1] > pos.pos_y) {
-    //         move.attacker = true;
-    //         move.defender = false;
-    //     }
-    // }
+    if(eyes.balive) {
+        teeth.update(int(pos.pos_x), int(pos.pos_y), int(pos.ball_pos_x), int(pos.ball_pos_y));
+    } else {
+        teeth.update(int(pos.pos_x), int(pos.pos_y), 255, 0);
+        if(teeth.other_ball_location[0] != -1) {
+            eyes.straight = floatMod(atan2(teeth.other_ball_location[0], teeth.other_ball_location[1]), 360);
+            eyes.balldist = sqrt(pow(teeth.other_ball_location[0]-pos.pos_x,2) + pow(teeth.other_ball_location[1]-pos.pos_y,2));
+        }
+    }
+    if(teeth.connection == false) {
+        move.attacker = false;
+        move.defender = true;
+    } else {
+        // Add Surging!!!
+        if(teeth.other_robot_location[1] != -1 && teeth.other_robot_location[1] < pos.pos_y) {
+            move.attacker = false;
+            move.defender = true;
+        } else if(teeth.other_robot_location[1] != -1 && teeth.other_robot_location[1] > pos.pos_y) {
+            move.attacker = true;
+            move.defender = false;
+        }
+    }
 
     //Position is determined by a 6x8 grid on the field. Old Code
     // float a_x = -1000;

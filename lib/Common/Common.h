@@ -111,7 +111,7 @@ struct Vector3D {
 
 //Bluetooth
 #define toothSerial Serial1
-#define TOOTH_BAUD 38400
+#define TOOTH_BAUD 9600
 #define TOOTH_PACKET_SIZE 6
 #define TOOTH_START_BITE 254
 #define TOOTH_NO_DATA 255
